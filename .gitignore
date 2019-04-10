@@ -1,5 +1,7 @@
 site.db
 donkey_database.db
+config.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

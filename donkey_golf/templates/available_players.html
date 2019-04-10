@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<link href="https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.js"></script>
+<h3> Available Players </h3>
+<table
+  id="table"
+  data-toggle="table"
+  data-height="500"
+  data-pagination="true"
+  data-page-size="25"
+  data-sortable="true"
+  class="table-sm table-striped">
+  <thead class="thead-dark">
+    <tr>
+      <th data-field="id" data-sortable="true" data-halign="center">Player</th>
+      <th data-field="song" data-sortable="true" data-halign="center">Tee-Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i, row in df.iterrows() %}
+    <tr>
+      <td> {{row['player']}} </td>
+      <td> {{row['tee_time']}} </td>
+    </tr>
+
+    {% endfor %}
+    </tbody>
+
+{% endblock content %}
