@@ -1,23 +1,8 @@
 from flask import render_template, url_for, flash, redirect, request
 from donkey_golf import app, db, bcrypt, data_utils
 from donkey_golf.forms import RegistrationForm, LoginForm
-from donkey_golf.models import User
+from donkey_golf.models import User, Teams
 from flask_login import login_user, current_user, logout_user, login_required
-
-posts = [
-    {
-        'author': 'Corey Schafer',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'April 20, 2018'
-    },
-    {
-        'author': 'Jane Doe',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'April 21, 2018'
-    }
-]
 
 
 @app.route("/")
@@ -89,23 +74,35 @@ def account():
 @login_required
 def my_team():
 
+    # Pull a list of available players and rankings
     lb_df = data_utils.pull_available_players()
     if request.method == 'POST':
         team_list = request.form.getlist('team_list')
         print(f'TEAM LIST: {team_list}')
 
-    grouper = lb_df.loc[lb_df['player'].isin(team_list)].groupby(['tier'])['player'].count().reset_index()
-    tier_dict = dict(zip(grouper.tier, grouper.player))
-    tier_1 = tier_dict.get('Tier 1', 0)
-    tier_2 = tier_dict.get('Tier 2', 0)
-    print(tier_dict)
-    # Make sure they pick 3 people from each tier
-    if tier_1 == 3 and tier_2 == 3:
-        print('Clutch')
-        print(team_list)
-        flash('Congrats - you have selected a team!', 'success')
-    else:
-        flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
+        grouper = lb_df.loc[lb_df['player'].isin(team_list)].groupby(['tier'])['player'].count().reset_index()
+        tier_dict = dict(zip(grouper.tier, grouper.player))
+        tier_1 = tier_dict.get('Tier 1', 0)
+        tier_2 = tier_dict.get('Tier 2', 0)
+        print(tier_dict)
+
+        # Make sure they pick 3 people from each tier
+        if tier_1 == 3 and tier_2 == 3:
+            print('Clutch')
+            print(team_list)
+            try:
+                for golfer in team_list:
+                    entry = Teams(id=current_user.id,
+                                  tourney_id=2748486273828282,
+                                  golfer=golfer)
+                    db.session.add(entry)
+                    db.session.commit()
+                flash('Congrats - you have selected a team!', 'success')
+            except Exception as e:
+                flash("Uh Oh - Weird Error", 'danger')
+                flash(f'{e}', 'info')
+        else:
+            flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
 
     return render_template('available_players.html', title='Players',
                             df=data_utils.pull_available_players())
