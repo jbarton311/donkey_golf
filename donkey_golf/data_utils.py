@@ -3,7 +3,7 @@ import pandas as pd
 
 from donkey_golf import config
 
-secrets = config.DGConfig()
+conf = config.DGConfig()
 
 def scrape_espn_leaderboard():
     dict = {}
@@ -69,7 +69,7 @@ def data_load_rankings():
     load_table_to_db(scrape_world_rankings_data(), 'rankings')
 
 def pull_available_players():
-    conn = sqlite3.connect(secrets.db_location)
+    conn = sqlite3.connect(conf.db_location)
     sql = '''SELECT a.*, b.current_rank, b.events_played FROM pre_tourney a
             LEFT JOIN rankings b ON a.player=b.player
             ORDER BY current_rank
@@ -81,3 +81,16 @@ def pull_available_players():
     df.loc[df['rank'] <= 12, 'tier'] = 'Tier 1'
 
     return df
+
+def users_team(user_id):
+    '''
+    Pulls leaderboard data for everyone on a given users team
+    '''
+    user_sql = f'''
+    SELECT * FROM teams
+    WHERE id = {user_id}
+    AND tourney_id = {conf.tourney_id}
+    '''
+
+    df_team_results = run_sql(user_sql)
+    return df_team_results

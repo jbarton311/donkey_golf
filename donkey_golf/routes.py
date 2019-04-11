@@ -1,9 +1,10 @@
 from flask import render_template, url_for, flash, redirect, request
-from donkey_golf import app, db, bcrypt, data_utils
+from donkey_golf import app, db, bcrypt, data_utils, config
 from donkey_golf.forms import RegistrationForm, LoginForm
 from donkey_golf.models import User, Teams
 from flask_login import login_user, current_user, logout_user, login_required
 
+conf = config.DGConfig()
 
 @app.route("/")
 @app.route("/home")
@@ -74,6 +75,14 @@ def account():
 @login_required
 def my_team():
 
+    # Pull users team
+    df_team_results = data_utils.users_team(current_user.id)
+
+    # If they have a team, take them to their team
+    if not df_team_results.empty:
+        flash('You already have a team - taking you here for now!', 'danger')
+        return render_template('account.html', title='My Team')
+
     # Pull a list of available players and rankings
     lb_df = data_utils.pull_available_players()
     if request.method == 'POST':
@@ -89,11 +98,12 @@ def my_team():
         # Make sure they pick 3 people from each tier
         if tier_1 == 3 and tier_2 == 3:
             print('Clutch')
+            print(conf.tourney_id)
             print(team_list)
             try:
                 for golfer in team_list:
                     entry = Teams(id=current_user.id,
-                                  tourney_id=2748486273828282,
+                                  tourney_id=conf.tourney_id,
                                   golfer=golfer)
                     db.session.add(entry)
                     db.session.commit()
