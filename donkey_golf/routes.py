@@ -11,12 +11,6 @@ conf = config.DGConfig()
 def home():
     return render_template('home.html')
 
-
-@app.route("/tourney_leaderboard")
-def tourney_leaderboard():
-    return render_template('tourney_leaderboard.html')
-
-
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
@@ -86,6 +80,7 @@ def my_team():
 
     # Pull a list of available players and rankings
     lb_df = data_utils.pull_available_players()
+
     if request.method == 'POST':
         team_list = request.form.getlist('team_list')
         print(f'TEAM LIST: {team_list}')
@@ -122,66 +117,14 @@ def my_team():
 def how_to_play():
     return render_template('how_to_play.html', title='How To Play')
 
-"""
-@application.route("/my_team", methods=['GET', 'POST'])
+@app.route("/tourney_leaderboard")
 @login_required
-def my_team():
+def tourney_leaderboard():
 
-    # Pull users team
-    df_team_results = users_team(current_user.id)
+    df_tourney = data_utils.pull_tourney_leaderboard(user_id=current_user.id)
+    #df_info = pull_tourney_info()
+    #df_tiger = tiger_results(user_id=current_user.id)
 
-    # Pull in current tourney info
-    current_tourney_info = pull_tourney_info()
-    tourney_status = current_tourney_info['tourney_status'][0]
-
-    lb_df = pull_available_players()
-
-    # If they have a team, take them to their team
-    if not df_team_results.empty:
-        return render_template('user_team.html', title='My Team',
-                               user_id=current_user.id, team=df_team_results)
-
-    # If the tourney is anything other than Scheduled - don't let them draft
-    elif tourney_status != 'Scheduled':
-        flash('Sorry - tourney has already started!', 'danger')
-        return render_template('home.html', title='Home')
-
-    # Else - let them draft!
-    else:
-        if request.method == 'POST':
-            team_list = request.form.getlist('team_list')
-            print(f'TEAM LIST: {team_list}')
-            grouper = lb_df.loc[lb_df['player_id'].isin(team_list)].groupby(['tier'])['player_name'].count().reset_index()
-            tier_dict = dict(zip(grouper.tier, grouper.player_name))
-            tier_1 = tier_dict.get('Tier 1', 0)
-            tier_2 = tier_dict.get('Tier 2', 0)
-
-            # Make sure they pick 3 people from each tier
-            if tier_1 == 3 and tier_2 == 3:
-                print('Clutch')
-                print(team_list)
-                try:
-                    for golfer in team_list:
-                        entry = Teams(id=current_user.id,
-                                      tourney_id=current_tourney_id,
-                                      golfer=golfer)
-                        db.session.add(entry)
-                        db.session.commit()
-                    flash('Congrats - you have selected a team!', 'success')
-                except Exception as e:
-                    flash("Uh Oh - Weird Error", 'danger')
-                    flash(f'{e}', 'info')
-            else:
-                flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
-                return render_template('select_team_v2.html',
-                                       title='My Team',
-                                       leaderboard=lb_df)
-
-            return redirect(url_for('scoreboard'))
-        else:
-            print(request.method)
-
-    return render_template('select_team_v2.html',
-                           title='My Team',
-                           leaderboard=lb_df)
-"""
+    return render_template('tourney_leaderboard.html',
+                           title='Tourney Leaderboard',
+                           df_tourney=df_tourney)

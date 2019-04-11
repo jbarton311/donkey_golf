@@ -1,7 +1,46 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h4>Tourney Leaderboard</h4>
 
+<div>
+  <div class="page-header" style="text-align:center; padding-top:10px;">
+    <h4>Tourney Leaderboard</h4>
+  </div>
+
+
+<font size="2" face="Arial">
+<table class="table table-sm jtable">
+    <thead>
+      <tr>
+        <th style="width: 5%">POS</th>
+        <th style="width: 30%">PLAYER</th>
+        <th style="width: 15%">TO PAR</th>
+        <th style="width: 10%">THRU</th>
+        <th style="width: 10%">TODAY</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for i, row in df_tourney.iterrows() %}
+      {% if row['on_team'] == 'Yes' %}
+        <tr class="slate-gray text-white">
+      {% elif row['player']=='Tiger Woods' %}
+        <tr class="tiger-red text-white">
+      {% else %}
+        <tr>
+      {% endif %}
+        <td>{{ row['pos'] }}</td>
+        <td>{{ row['player'] }}</td>
+        <td>{{ row['to_par'] }}</td>
+        <td>{{ row['thru'] }}</td>
+        <td>{{ row['r1'] }}</td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+  </table>
+</font>
+</div>
 
 {% endblock content %}

@@ -13,12 +13,12 @@ def scrape_espn_leaderboard():
     leaderboard = pd.read_html('http://www.espn.com/golf/leaderboard',header=3)[0]
 
     leaderboard.columns = leaderboard.columns.str.lower().str.replace(' ','_')
-
+    print(leaderboard.columns)
     if leaderboard.columns.tolist() == ['player', 'tee_time']:
         dict['pre_tourney'] = leaderboard
     else:
         # Getting rid of 1,500+ unnecessary columns ESPN brings in & a few columns from rankings df
-        keep_cols_leaderboard = ['pos','player','to_par','r1','r2','r3','r4','tot']
+        keep_cols_leaderboard = ['pos','player','to_par','thru','r1','r2','r3','r4','tot']
 
         leaderboard = leaderboard[keep_cols_leaderboard]
 
@@ -26,6 +26,7 @@ def scrape_espn_leaderboard():
         leaderboard.rename(columns={'tot': 'total_strokes'},
                                 inplace=True)
 
+        leaderboard['tourney_id'] = conf.tourney_id
         dict['in_progress'] = leaderboard
 
     return dict
@@ -67,12 +68,14 @@ def run_sql(sql):
 
 def data_load_leaderboard():
     result = scrape_espn_leaderboard()
-    if result.get('pre_tourney').shape[0] > 0:
-        print('pre_tourney load happening')
-        load_table_to_db(result.get('pre_tourney'), 'pre_tourney')
-    elif result.get('in_progress').shape[0] > 0:
-        print('leaderboard load happening')
-        load_table_to_db(scrape_espn_leaderboard(), 'leaderboard')
+    if 'pre_tourney' in result.keys():
+        if result.get('pre_tourney').shape[0] > 0:
+            print('pre_tourney load happening')
+            load_table_to_db(result.get('pre_tourney'), 'pre_tourney')
+    elif 'in_progress' in result.keys():
+        if result.get('in_progress').shape[0] > 0:
+            print('leaderboard load happening')
+            load_table_to_db(result.get('in_progress'), 'leaderboard')
 
 def data_load_rankings():
     load_table_to_db(scrape_world_rankings_data(), 'rankings')
@@ -103,3 +106,24 @@ def users_team(user_id):
 
     df_team_results = run_sql(user_sql)
     return df_team_results
+
+def pull_tourney_leaderboard(user_id):
+    '''
+    Pulls leaderboard data for the tourney
+    '''
+    sql = '''
+    SELECT * from leaderboard
+    '''
+
+    df = run_sql(sql)
+
+    user_df = users_team(user_id)
+
+    final_df = df.merge(user_df[['golfer']],
+        how='left',
+        left_on=['player'],
+        right_on=['golfer'])
+
+    final_df.loc[final_df['golfer'].notnull(), 'on_team'] = 'Yes'
+
+    return final_df
