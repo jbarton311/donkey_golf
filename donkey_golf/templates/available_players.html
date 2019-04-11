@@ -30,8 +30,7 @@
   </tr>
 </thead>
 <tbody>
-
-    {% for i, row in df.iterrows() %}
+    {% for i, row in df.loc[df['tier'] == 'Tier 1'].iterrows() %}
     <tr>
       <td style="text-align:center; padding-left: 25px;">
         <input type="checkbox" class="form-check-input" style="padding-left: 5px;" name="team_list" value="{{ row['player'] }}">
@@ -41,12 +40,43 @@
             {{row['player']}}
           </label>
       </td>
-      <td> {{row['tee_time']}} </td>
       <td> {{row['current_rank']}} </td>
+      <td> {{row['tier']}} </td>
     </tr>
   {% endfor %}
 </tbody>
 </table>
+
+<h5 style="text-align:center"> Tier 2 (Pick 3) </h5>
+<table class="table table-hover table-sm jtable">
+<thead>
+<tr>
+<th style="width: 10%"> Pick </th>
+  <th>Golfer</th>
+  <th>World Ranking</th>
+  <th>Tier</th>
+</tr>
+</thead>
+<tbody>
+{% for i, row in df.loc[df['tier'] == 'Tier 2'].iterrows() %}
+<tr>
+  <td style="text-align:center; padding-left: 25px;">
+    <input type="checkbox" class="form-check-input" style="padding-left: 5px;" name="team_list" value="{{ row['player'] }}">
+  </td>
+  <td>
+    <label class="form-check-label" for="team_list">
+        {{row['player']}}
+      </label>
+  </td>
+  <td> {{row['current_rank']}} </td>
+  <td> {{row['tier']}} </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+
+
 
 </div>
 <footer>

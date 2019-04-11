@@ -74,4 +74,10 @@ def pull_available_players():
             LEFT JOIN rankings b ON a.player=b.player
             ORDER BY current_rank
             '''
-    return pd.read_sql(sql, conn)
+    df = pd.read_sql(sql, conn)
+
+    df['rank'] = df['current_rank'].rank(ascending=True, method='min')
+    df['tier'] = 'Tier 2'
+    df.loc[df['rank'] <= 12, 'tier'] = 'Tier 1'
+
+    return df
