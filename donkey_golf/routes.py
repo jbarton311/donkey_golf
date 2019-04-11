@@ -81,7 +81,8 @@ def my_team():
     # If they have a team, take them to their team
     if not df_team_results.empty:
         flash('You already have a team - taking you here for now!', 'danger')
-        return render_template('account.html', title='My Team')
+        return render_template('user_team.html', title='My Team',
+                               user_id=current_user.id, team=df_team_results)
 
     # Pull a list of available players and rankings
     lb_df = data_utils.pull_available_players()

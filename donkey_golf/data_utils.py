@@ -2,8 +2,10 @@ import sqlite3
 import pandas as pd
 
 from donkey_golf import config
+import oyaml
 
 conf = config.DGConfig()
+
 
 def scrape_espn_leaderboard():
     dict = {}
@@ -39,10 +41,17 @@ def scrape_world_rankings_data():
                             'This Week': 'current_rank',
                             'Last week':'lw_rank',
                             'End 2018':'ly_rank',
-                            'Name':'player',
+                            'Name':'player_raw',
                             'Events Played (Actual)':'events_played'},
                             inplace=True)
 
+    # Some of the players names are messed up
+    # read correct mappings from YAML file and apply them
+    yaml_dict = oyaml.load(open(conf.yaml_loc))
+    player_map = yaml_dict.get('world_rankings')
+    rankings['player_cleaned'] = rankings['player_raw'].map(player_map)
+
+    rankings['player'] = rankings['player_cleaned'].combine_first(rankings['player_raw'])
     return rankings
 
 def load_table_to_db(df, tablename):
