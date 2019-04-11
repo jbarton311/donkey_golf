@@ -98,14 +98,25 @@ def users_team(user_id):
     '''
     Pulls leaderboard data for everyone on a given users team
     '''
-    user_sql = f'''
-    SELECT * FROM teams
-    WHERE id = {user_id}
-    AND tourney_id = {conf.tourney_id}
-    '''
 
-    df_team_results = run_sql(user_sql)
-    return df_team_results
+    user_lb_sql = f'''SELECT * from teams a
+                    INNER JOIN leaderboard b
+                        ON a.golfer = b.player
+                    WHERE id = {user_id}'''
+
+    df_user_lb = run_sql(user_lb_sql)
+
+    if df_user_lb.shape[0] > 0:
+        return df_user_lb
+    else:
+        user_sql = f'''
+        SELECT * FROM teams
+        WHERE id = {user_id}
+        AND tourney_id = {conf.tourney_id}
+        '''
+
+        df_team_results = run_sql(user_sql)
+        return df_team_results
 
 def pull_tourney_leaderboard(user_id):
     '''

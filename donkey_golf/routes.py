@@ -121,6 +121,7 @@ def how_to_play():
 @login_required
 def tourney_leaderboard():
 
+    data_utils.data_load_leaderboard()
     df_tourney = data_utils.pull_tourney_leaderboard(user_id=current_user.id)
     #df_info = pull_tourney_info()
     #df_tiger = tiger_results(user_id=current_user.id)
