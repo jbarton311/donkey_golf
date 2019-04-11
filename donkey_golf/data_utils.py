@@ -46,13 +46,13 @@ def scrape_world_rankings_data():
     return rankings
 
 def load_table_to_db(df, tablename):
-    conn = sqlite3.connect('site.db')
+    conn = sqlite3.connect('/home/greenman225/Code/github/donkey_golf/donkey_golf/site.db')
     c = conn.cursor()
     # Inserting leaderboard info into sql
     df.to_sql(tablename, conn, if_exists="replace", index=False)
 
 def run_sql(sql):
-    conn = sqlite3.connect('site.db')
+    conn = sqlite3.connect('/home/greenman225/Code/github/donkey_golf/donkey_golf/site.db')
     return pd.read_sql_query(sql
                   , conn)
 
@@ -70,4 +70,8 @@ def data_load_rankings():
 
 def pull_available_players():
     conn = sqlite3.connect(secrets.db_location)
-    return pd.read_sql('SELECT * FROM pre_tourney', conn)
+    sql = '''SELECT a.*, b.current_rank, b.events_played FROM pre_tourney a
+            LEFT JOIN rankings b ON a.player=b.player
+            ORDER BY current_rank
+            '''
+    return pd.read_sql(sql, conn)

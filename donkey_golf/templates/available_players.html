@@ -3,29 +3,57 @@
 <link href="https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css" rel="stylesheet">
 
 <script src="https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.js"></script>
-<h3> Available Players </h3>
-<table
-  id="table"
-  data-toggle="table"
-  data-height="500"
-  data-pagination="true"
-  data-page-size="25"
-  data-sortable="true"
-  class="table-sm table-striped">
-  <thead class="thead-dark">
-    <tr>
-      <th data-field="id" data-sortable="true" data-halign="center">Player</th>
-      <th data-field="song" data-sortable="true" data-halign="center">Tee-Time</th>
-    </tr>
-  </thead>
-  <tbody>
+
+<div class="container">
+<h5 style="text-align:center"> Draft Your Team </h5>
+<!-- Button trigger modal -->
+<div style="padding-top: 10px; padding-bottom: 10px; text-align: center;">
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  How To Draft
+</button>
+</div>
+</div>
+<div>
+
+<form action="{{request.path}}" method="post">
+
+
+  <font size="2" face="Arial">
+    <h5 style="text-align:center"> Tier 1 (Pick 3) </h5>
+  <table class="table table-hover table-sm jtable">
+<thead>
+  <tr>
+    <th style="width: 10%"> Pick </th>
+      <th>Golfer</th>
+      <th>World Ranking</th>
+      <th>Tier</th>
+  </tr>
+</thead>
+<tbody>
+
     {% for i, row in df.iterrows() %}
     <tr>
-      <td> {{row['player']}} </td>
+      <td style="text-align:center; padding-left: 25px;">
+        <input type="checkbox" class="form-check-input" style="padding-left: 5px;" name="team_list" value="{{ row['player'] }}">
+      </td>
+      <td>
+        <label class="form-check-label" for="team_list">
+            {{row['player']}}
+          </label>
+      </td>
       <td> {{row['tee_time']}} </td>
+      <td> {{row['current_rank']}} </td>
     </tr>
+  {% endfor %}
+</tbody>
+</table>
 
-    {% endfor %}
-    </tbody>
+</div>
+<footer>
+<button type="button submit" value="Submit" class="btn btn-info float-right" >Lock 'em in</button>
+</footer>
+</form>
+
+
 
 {% endblock content %}

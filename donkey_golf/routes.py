@@ -85,9 +85,13 @@ def logout():
 def account():
     return render_template('account.html', title='Account')
 
-@app.route("/available_players")
+@app.route("/my_team", methods=['GET', 'POST'])
 @login_required
-def available_players():
+def my_team():
+    if request.method == 'POST':
+        team_list = request.form.getlist('team_list')
+        print(f'TEAM LIST: {team_list}')
+
     return render_template('available_players.html', title='Players',
                             df=data_utils.pull_available_players())
 
