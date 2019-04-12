@@ -126,9 +126,15 @@ def tourney_leaderboard():
     #df_info = pull_tourney_info()
     #df_tiger = tiger_results(user_id=current_user.id)
 
+    try:
+        cut_dict = data_utils.calculate_cut_line()
+    except Exception as e:
+        cut_dict = None
+
     return render_template('tourney_leaderboard.html',
                            title='Tourney Leaderboard',
-                           df_tourney=df_tourney)
+                           df_tourney=df_tourney,
+                           cut_dict=cut_dict)
 
 @app.route("/game_scoreboard")
 @login_required

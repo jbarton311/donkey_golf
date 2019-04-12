@@ -7,6 +7,16 @@
     <h4>Tourney Leaderboard</h4>
   </div>
 
+  <font size="2" face="Arial">
+  <div>
+    <div style="text-align: right;"> Data as of '2019-04-10' </div>
+  </div>
+  {% if cut_dict%}
+    <br>
+    <span>Projected Cut: {{cut_dict['cut_str']}}</span>
+  {% endif %}
+</font>
+
 
 <font size="2" face="Arial">
 <table class="table table-sm jtable">
