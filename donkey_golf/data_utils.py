@@ -138,3 +138,60 @@ def pull_tourney_leaderboard(user_id):
     final_df.loc[final_df['golfer'].notnull(), 'on_team'] = 'Yes'
 
     return final_df
+
+def aggregate_team_score():
+    '''
+    Pull each users aggregate score for the current tourney
+    '''
+
+    sql = """
+    SELECT c.id, c.username, b.* FROM teams a
+    LEFT JOIN leaderboard b
+    ON a.golfer=b.player
+    LEFT JOIN user c
+    ON a.id=c.id
+    """
+
+    df = run_sql(sql)
+
+    # Convert to par field to an integer so we can aggregate
+    df['user_score'] = df['to_par'].str.replace('+','').str.replace('E','0')
+    df['user_score'] = df['user_score'].astype(int)
+
+    # Get an overall score for each user
+    team_score_df = df.groupby(['id','username'])['user_score'].sum().reset_index()
+    team_score_df.sort_values('user_score', inplace=True)
+
+    team_score_df['rank'] = team_score_df['user_score'].rank(ascending=True, method='min').astype(int)
+
+    return team_score_df
+
+def determine_ties_in_scoreboard(df):
+    '''
+    Takes a scoreboard df and determines rank and handles ties
+    '''
+    df_ties = df.copy()
+
+    # Need to create a better rank that handles ties
+    df_ties['new_rank'] = df_ties['rank'].copy()
+
+    df_ties = df_ties.groupby(['rank'])['id'].count().reset_index()
+    df_ties.loc[df_ties['id'] > 1, 'new_rank'] = "T"
+
+    df_ties.loc[df_ties['new_rank'].notnull(), 'final_rank'] = 'T' + df_ties['rank'].astype(str)
+    df_ties.loc[df_ties['new_rank'].isnull(), 'final_rank'] = df_ties['rank'].astype(str)
+
+    return df_ties[['rank','final_rank']]
+
+def pull_scoreboard():
+    '''
+    Pulls aggregate game score and then adds in tie info
+    '''
+    df = aggregate_team_score()
+    tie_df = determine_ties_in_scoreboard(df)
+
+    df = df.merge(tie_df,
+        how='left',
+        on='rank')
+
+    return df

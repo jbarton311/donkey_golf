@@ -30,7 +30,8 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
-        return redirect(url_for('login'))
+        login_user(user)
+        return render_template('home.html')
     return render_template('register.html', title='Register', form=form)
 
 
@@ -74,7 +75,6 @@ def my_team():
 
     # If they have a team, take them to their team
     if not df_team_results.empty:
-        flash('You already have a team - taking you here for now!', 'danger')
         return render_template('user_team.html', title='My Team',
                                user_id=current_user.id, team=df_team_results)
 
@@ -129,3 +129,11 @@ def tourney_leaderboard():
     return render_template('tourney_leaderboard.html',
                            title='Tourney Leaderboard',
                            df_tourney=df_tourney)
+
+@app.route("/game_scoreboard")
+@login_required
+def game_scoreboard():
+    df_sb = data_utils.pull_scoreboard()
+    return render_template('game_scoreboard.html',
+                           title='Donkey Leaderboard',
+                           df_sb=df_sb)

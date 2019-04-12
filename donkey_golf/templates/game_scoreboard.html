@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h5 style="text-align:center;"> Game Scoreboard </h5>
+<font size="2" face="Arial">
+</font>
+
+
+<font size="2" face="Arial">
+<table class="table table-sm jtable">
+    <thead>
+      <tr>
+        <th>RANK</th>
+        <th>PLAYER</th>
+        <th>SCORE</th>
+        <th>CUT</th>
+        <th>IN PLAY</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for i, row in df_sb.iterrows() %}
+      {% if row['username'] == current_user.username %}
+        <tr class="slate-gray text-white">
+      {% else %}
+        <tr>
+      {% endif %}
+          <td>{{row['final_rank']}}</td>
+
+          <td>
+            {{row['username']}}
+        </td>
+
+          <td>{{row['user_score']}}</td>
+          <td>None</td>
+          <td>ALL</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
+{% endblock content %}
