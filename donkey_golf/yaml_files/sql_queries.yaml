@@ -1,0 +1,27 @@
+pull_available_players:
+    SELECT a.*, b.current_rank, b.events_played
+    FROM pre_tourney a
+    LEFT JOIN rankings b
+      ON a.player=b.player
+    ORDER BY current_rank
+
+users_team:
+    SELECT * from teams a
+    INNER JOIN leaderboard b
+        ON a.golfer = b.player
+    WHERE id = {}
+
+users_team_pre_tourney:
+    SELECT * FROM teams
+    WHERE id = {0}
+    AND tourney_id = {1}
+
+pull_tourney_leaderboard:
+    SELECT * from leaderboard
+
+aggregate_team_score:
+    SELECT c.id, c.username, b.* FROM teams a
+    LEFT JOIN leaderboard b
+    ON a.golfer=b.player
+    LEFT JOIN user c
+    ON a.id=c.id

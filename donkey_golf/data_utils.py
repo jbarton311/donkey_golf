@@ -1,11 +1,34 @@
 import sqlite3
 import pandas as pd
+import logging
 
 from donkey_golf import config
 import oyaml
 
+import logging
+
+# create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
+
+
 conf = config.DGConfig()
 
+yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc))
 
 def scrape_espn_leaderboard():
     dict = {}
@@ -48,7 +71,7 @@ def scrape_world_rankings_data():
 
     # Some of the players names are messed up
     # read correct mappings from YAML file and apply them
-    yaml_dict = oyaml.load(open(conf.yaml_loc))
+    yaml_dict = oyaml.load(open(conf.yaml__world_rankings_loc))
     player_map = yaml_dict.get('world_rankings')
     rankings['player_cleaned'] = rankings['player_raw'].map(player_map)
 
@@ -56,15 +79,18 @@ def scrape_world_rankings_data():
     return rankings
 
 def load_table_to_db(df, tablename):
-    conn = sqlite3.connect('/home/greenman225/Code/github/donkey_golf/donkey_golf/site.db')
-    c = conn.cursor()
-    # Inserting leaderboard info into sql
-    df.to_sql(tablename, conn, if_exists="replace", index=False)
+    '''
+    Takes a df and tablename and loads it to our database
+    '''
+    with sqlite3.connect(conf.db_location) as conn:
+        df.to_sql(tablename, conn, if_exists="replace", index=False)
 
 def run_sql(sql):
-    conn = sqlite3.connect('/home/greenman225/Code/github/donkey_golf/donkey_golf/site.db')
-    return pd.read_sql_query(sql
-                  , conn)
+    '''
+    Takes a SQL and connects to database to execute passed SQL
+    '''
+    with sqlite3.connect(conf.db_location) as conn:
+        return pd.read_sql_query(sql ,conn)
 
 def data_load_leaderboard():
     result = scrape_espn_leaderboard()
@@ -78,15 +104,18 @@ def data_load_leaderboard():
             load_table_to_db(result.get('in_progress'), 'leaderboard')
 
 def data_load_rankings():
+    '''
+    Will pull world rankings and load it to the database
+    '''
     load_table_to_db(scrape_world_rankings_data(), 'rankings')
 
 def pull_available_players():
-    conn = sqlite3.connect(conf.db_location)
-    sql = '''SELECT a.*, b.current_rank, b.events_played FROM pre_tourney a
-            LEFT JOIN rankings b ON a.player=b.player
-            ORDER BY current_rank
-            '''
-    df = pd.read_sql(sql, conn)
+    '''
+    Pulls a list of players to be available for the draft
+    '''
+    sql = yaml_sql_dict.get('pull_available_players')
+
+    df = run_sql(sql)
 
     df['rank'] = df['current_rank'].rank(ascending=True, method='min')
     df['tier'] = 'Tier 2'
@@ -99,34 +128,31 @@ def users_team(user_id):
     Pulls leaderboard data for everyone on a given users team
     '''
 
-    user_lb_sql = f'''SELECT * from teams a
-                    INNER JOIN leaderboard b
-                        ON a.golfer = b.player
-                    WHERE id = {user_id}'''
+    user_lb_sql = yaml_sql_dict.get('users_team')
+
+    # Sub in users ID into the SQL
+    user_lb_sql = user_lb_sql.format(user_id)
 
     df_user_lb = run_sql(user_lb_sql)
 
+    # CHANGE BACK
     if df_user_lb.shape[0] > 0:
         return df_user_lb
     else:
-        user_sql = f'''
-        SELECT * FROM teams
-        WHERE id = {user_id}
-        AND tourney_id = {conf.tourney_id}
-        '''
+        sql_pre_tourney = yaml_sql_dict.get('users_team_pre_tourney')
+        sql_pre_tourney = sql_pre_tourney.format(user_id, conf.tourney_id)
 
-        df_team_results = run_sql(user_sql)
+        df_team_results = run_sql(sql_pre_tourney)
         return df_team_results
 
 def pull_tourney_leaderboard(user_id):
     '''
     Pulls leaderboard data for the tourney
     '''
-    sql = '''
-    SELECT * from leaderboard
-    '''
 
+    sql = yaml_sql_dict.get('pull_tourney_leaderboard')
     df = run_sql(sql)
+
 
     user_df = users_team(user_id)
 
@@ -143,15 +169,7 @@ def aggregate_team_score():
     '''
     Pull each users aggregate score for the current tourney
     '''
-
-    sql = """
-    SELECT c.id, c.username, b.* FROM teams a
-    LEFT JOIN leaderboard b
-    ON a.golfer=b.player
-    LEFT JOIN user c
-    ON a.id=c.id
-    """
-
+    sql = yaml_sql_dict.get('aggregate_team_score')
     df = run_sql(sql)
 
     # Convert to par field to an integer so we can aggregate
