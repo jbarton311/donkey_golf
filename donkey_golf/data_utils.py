@@ -1,11 +1,9 @@
 import sqlite3
 import pandas as pd
 import logging
-
-from donkey_golf import config
 import oyaml
 
-import logging
+from donkey_golf import config
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -24,10 +22,8 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-
-
+# Bringing in config and SQL dict
 conf = config.DGConfig()
-
 yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc))
 
 def scrape_espn_leaderboard():
