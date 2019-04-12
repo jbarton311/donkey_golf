@@ -25,3 +25,6 @@ aggregate_team_score:
     ON a.golfer=b.player
     LEFT JOIN user c
     ON a.id=c.id
+
+calculate_cut_line:
+    SELECT pos FROM leaderboard WHERE pos LIKE ('%projected%') LIMIT 1

@@ -26,15 +26,22 @@
         <tr class="slate-gray text-white">
       {% elif row['player']=='Tiger Woods' %}
         <tr class="tiger-red text-white">
+      {% elif row['pos'].lower().startswith('projected')%}
+        <tr class="cut_color text-white">
       {% else %}
         <tr>
       {% endif %}
+
+      {% if row['pos'].lower().startswith('projected')%}
+        <td colspan="5">{{ row['pos'] }}</td>
+      {% else %}
         <td>{{ row['pos'] }}</td>
         <td>{{ row['player'] }}</td>
         <td>{{ row['to_par'] }}</td>
         <td>{{ row['thru'] }}</td>
         <td>{{ row['r1'] }}</td>
       </tr>
+      {% endif %}
 
       {% endfor %}
 

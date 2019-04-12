@@ -209,3 +209,25 @@ def pull_scoreboard():
         on='rank')
 
     return df
+
+
+def calculate_cut_line():
+    '''
+    Pull the cut line from the tourney leaderboard table
+
+    Returns a dict
+    '''
+    sql = yaml_sql_dict.get('calculate_cut_line')
+    df = run_sql(sql)
+    # Grab the cut_str
+    cut_str = df['pos'][0].lower()
+
+    # Get rid of unneeded string
+    cut_str = cut_str.replace('projected cut ','')
+
+    # Put both string and int representations into a dict
+    cut_dict = {}
+    cut_dict['cut_str'] = cut_str
+    cut_dict['cut_int'] = int(cut_str.replace('+', '').replace('E', '0'))
+
+    return cut_dict

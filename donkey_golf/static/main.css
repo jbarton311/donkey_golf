@@ -40,6 +40,10 @@ font-family:"Arial";
   background-color: #2A3F52;
 }
 
+.cut_color {
+  background-color: #838383;
+}
+
 .site-header .navbar-nav .nav-link {
   color: #2f4f4f;
 }
