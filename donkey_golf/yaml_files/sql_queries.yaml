@@ -27,4 +27,7 @@ aggregate_team_score:
     ON a.id=c.id
 
 calculate_cut_line:
-    SELECT pos FROM leaderboard WHERE pos LIKE ('%projected%') LIMIT 1
+    SELECT pos FROM leaderboard
+    WHERE pos LIKE ('%projected%')
+      OR pos LIKE ('%failed to%')
+    LIMIT 1

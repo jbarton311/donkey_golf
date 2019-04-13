@@ -141,7 +141,7 @@ def users_team(user_id):
         df_team_results = run_sql(sql_pre_tourney)
         return df_team_results
 
-def pull_tourney_leaderboard(user_id):
+def pull_tourney_leaderboard(user_id=None):
     '''
     Pulls leaderboard data for the tourney
     '''
@@ -149,17 +149,17 @@ def pull_tourney_leaderboard(user_id):
     sql = yaml_sql_dict.get('pull_tourney_leaderboard')
     df = run_sql(sql)
 
+    if user_id:
+        user_df = users_team(user_id)
 
-    user_df = users_team(user_id)
+        df = df.merge(user_df[['golfer']],
+            how='left',
+            left_on=['player'],
+            right_on=['golfer'])
 
-    final_df = df.merge(user_df[['golfer']],
-        how='left',
-        left_on=['player'],
-        right_on=['golfer'])
+        df.loc[df['golfer'].notnull(), 'on_team'] = 'Yes'
 
-    final_df.loc[final_df['golfer'].notnull(), 'on_team'] = 'Yes'
-
-    return final_df
+    return df
 
 def aggregate_team_score():
     '''
@@ -221,13 +221,28 @@ def calculate_cut_line():
     df = run_sql(sql)
     # Grab the cut_str
     cut_str = df['pos'][0].lower()
-
-    # Get rid of unneeded string
-    cut_str = cut_str.replace('projected cut ','')
-
-    # Put both string and int representations into a dict
     cut_dict = {}
-    cut_dict['cut_str'] = cut_str
-    cut_dict['cut_int'] = int(cut_str.replace('+', '').replace('E', '0'))
+
+    # Not sure what will happen if cut is even...
+    if cut_str[-1:] == 'E':
+        cut_dict['cut_str'] = 'E'
+        cut_dict['cut_in'] = 0
+    else:
+        # Just grab the last two characters - this should be the cut score
+        cut_str = cut_str[-2:]
+        # Put both string and int representations into a dict
+        cut_dict['cut_str'] = cut_str
+        cut_dict['cut_int'] = int(cut_str.replace('+', '').replace('E', '0'))
 
     return cut_dict
+
+def determine_current_round():
+    '''
+    Figure out which round is in progress. Will be helpful for cut
+    calculations among other things
+    '''
+    df = pull_tourney_leaderboard()
+    rounds = ['r1','r2','r3','r4']
+    for round_num in rounds:
+        if df.loc[df[round_num] == '--'].shape[0] > 1:
+            return round_num
