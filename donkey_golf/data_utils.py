@@ -32,20 +32,38 @@ def scrape_espn_leaderboard():
     leaderboard = pd.read_html('http://www.espn.com/golf/leaderboard',header=3)[0]
 
     leaderboard.columns = leaderboard.columns.str.lower().str.replace(' ','_')
+
+    leaderboard['tourney_id'] = conf.tourney_id
     print(leaderboard.columns)
-    if leaderboard.columns.tolist() == ['player', 'tee_time']:
+    if leaderboard.columns.tolist() == ['player', 'tee_time','tourney_id']:
         dict['pre_tourney'] = leaderboard
+
+    elif leaderboard.columns.tolist() == ['pos',
+                                         'player',
+                                         'to_par',
+                                         'r1',
+                                         'r2',
+                                         'r3',
+                                         'r4',
+                                         'tot',
+                                         'earnings',
+                                         'fedex_pts',
+                                         'tourney_id']:
+        leaderboard.rename(columns={'tot': 'total_strokes'},
+                                inplace=True)
+
+        leaderboard['thru'] = 'F'
+
+        dict['in_progress'] = leaderboard
     else:
         # Getting rid of 1,500+ unnecessary columns ESPN brings in & a few columns from rankings df
-        keep_cols_leaderboard = ['pos','player','to_par','thru','r1','r2','r3','r4','tot']
-
-        leaderboard = leaderboard[keep_cols_leaderboard]
+        #keep_cols_leaderboard = ['pos','player','to_par','thru','r1','r2','r3','r4','tot','tourney_id']
+        #leaderboard = leaderboard[keep_cols_leaderboard]
 
         #Adding underscore to column names & changing to lowercase for querying
         leaderboard.rename(columns={'tot': 'total_strokes'},
                                 inplace=True)
 
-        leaderboard['tourney_id'] = conf.tourney_id
         dict['in_progress'] = leaderboard
 
     return dict
@@ -55,7 +73,6 @@ def scrape_world_rankings_data():
 
     keep_cols_rankings = ['This Week', 'Last week', 'End 2018', 'Name', 'Events Played (Actual)']
     rankings = rankings[keep_cols_rankings]
-
 
     rankings.rename(columns= {
                             'This Week': 'current_rank',
@@ -97,7 +114,33 @@ def data_load_leaderboard():
     elif 'in_progress' in result.keys():
         if result.get('in_progress').shape[0] > 0:
             print('leaderboard load happening')
-            load_table_to_db(result.get('in_progress'), 'leaderboard')
+            df = result.get('in_progress')
+            df = add_donkey_game_score(df)
+            load_table_to_db(df, 'leaderboard')
+    elif 'tourney_final' in result.keys():
+        if result.get('tourney_final').shape[0] > 0:
+            print('tourney final load happening')
+            df = result.get('tourney_final')
+            df = add_donkey_game_score(df)
+            load_table_to_db(df, 'leaderboard_final')
+
+def add_donkey_game_score(df):
+    '''
+    Will add a column called donkey score that should
+    convert the to_par string to an integer
+    '''
+    df.loc[df['to_par'] == 'E', 'donkey_score'] = 0
+    df.loc[df['to_par'].str[0:1] == '+', 'donkey_score'] = df['to_par'].str[1:]
+    df.loc[df['to_par'].str[0:1] == '-', 'donkey_score'] = df['to_par']
+
+    # IF they don't have a score of E or one that starts with a '+' or '-'
+    # let's assume they didn't make it to the weekend
+    cut_score = df.loc[df['donkey_score'].notnull(), 'donkey_score'].astype(int).max()
+    cut_score = cut_score + 1
+    df.loc[df['donkey_score'].isnull(), 'donkey_score'] = cut_score
+
+    return df
+
 
 def data_load_rankings():
     '''
@@ -167,16 +210,16 @@ def aggregate_team_score():
     '''
     sql = yaml_sql_dict.get('aggregate_team_score')
     df = run_sql(sql)
-
+    df['donkey_score'] = df['donkey_score'].astype(int)
     # Convert to par field to an integer so we can aggregate
-    df['user_score'] = df['to_par'].str.replace('+','').str.replace('E','0')
-    df['user_score'] = df['user_score'].astype(int)
+    #df['user_score'] = df['to_par'].str.replace('+','').str.replace('E','0')
+    #df['user_score'] = df['user_score'].astype(int)
 
     # Get an overall score for each user
-    team_score_df = df.groupby(['id','username'])['user_score'].sum().reset_index()
-    team_score_df.sort_values('user_score', inplace=True)
+    team_score_df = df.groupby(['id','username'])['donkey_score'].sum().reset_index()
+    team_score_df.sort_values('donkey_score', inplace=True)
 
-    team_score_df['rank'] = team_score_df['user_score'].rank(ascending=True, method='min').astype(int)
+    team_score_df['rank'] = team_score_df['donkey_score'].rank(ascending=True, method='min').astype(int)
 
     return team_score_df
 
@@ -209,7 +252,6 @@ def pull_scoreboard():
         on='rank')
 
     return df
-
 
 def calculate_cut_line():
     '''

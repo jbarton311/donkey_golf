@@ -36,13 +36,13 @@
         <tr class="slate-gray text-white">
       {% elif row['player']=='Tiger Woods' %}
         <tr class="tiger-red text-white">
-      {% elif row['pos'].lower().startswith('projected')%}
+      {% elif row['pos'].lower().startswith('projected') or row['pos'].lower().startswith('the following') %}
         <tr class="cut_color text-white">
       {% else %}
         <tr>
       {% endif %}
 
-      {% if row['pos'].lower().startswith('projected')%}
+      {% if row['pos'].lower().startswith('projected') or row['pos'].lower().startswith('the following') %}
         <td colspan="5">{{ row['pos'] }}</td>
       {% else %}
         <td>{{ row['pos'] }}</td>
