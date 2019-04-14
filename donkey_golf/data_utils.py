@@ -116,13 +116,8 @@ def data_load_leaderboard():
             print('leaderboard load happening')
             df = result.get('in_progress')
             df = add_donkey_game_score(df)
+            df = add_player_left_indicator(df)
             load_table_to_db(df, 'leaderboard')
-    elif 'tourney_final' in result.keys():
-        if result.get('tourney_final').shape[0] > 0:
-            print('tourney final load happening')
-            df = result.get('tourney_final')
-            df = add_donkey_game_score(df)
-            load_table_to_db(df, 'leaderboard_final')
 
 def add_donkey_game_score(df):
     '''
@@ -135,9 +130,38 @@ def add_donkey_game_score(df):
 
     # IF they don't have a score of E or one that starts with a '+' or '-'
     # let's assume they didn't make it to the weekend
+    df = add_score_for_cut_players(df)
+
+    return df
+
+def add_score_for_cut_players(df):
+    '''
+    Determines the score for cut players
+    and adds a missed_cut field
+    '''
     cut_score = df.loc[df['donkey_score'].notnull(), 'donkey_score'].astype(int).max()
     cut_score = cut_score + 1
+
+    df['missed_cut'] = 0
+    df.loc[df['donkey_score'].isnull(), 'missed_cut'] = 1
+
     df.loc[df['donkey_score'].isnull(), 'donkey_score'] = cut_score
+
+    return df
+
+def add_player_left_indicator(df):
+    '''
+    This should add a column 'player_left'
+    indicating if a player is still in progress
+    '''
+
+    df['player_left'] = 1
+
+    df.loc[df['missed_cut'] == 1, 'player_left'] = 0
+
+    df.loc[(df['missed_cut'] == 0) &
+          (df['r4'] != '--' ),
+          'player_left'] = 0
 
     return df
 
@@ -204,28 +228,24 @@ def pull_tourney_leaderboard(user_id=None):
 
     return df
 
-def aggregate_team_score():
+def aggregate_user_scores():
     '''
     Pull each users aggregate score for the current tourney
     '''
     sql = yaml_sql_dict.get('aggregate_team_score')
     df = run_sql(sql)
-    df['donkey_score'] = df['donkey_score'].astype(int)
-    # Convert to par field to an integer so we can aggregate
-    #df['user_score'] = df['to_par'].str.replace('+','').str.replace('E','0')
-    #df['user_score'] = df['user_score'].astype(int)
 
-    # Get an overall score for each user
-    team_score_df = df.groupby(['id','username'])['donkey_score'].sum().reset_index()
-    team_score_df.sort_values('donkey_score', inplace=True)
+    df.sort_values('donkey_score', inplace=True)
 
-    team_score_df['rank'] = team_score_df['donkey_score'].rank(ascending=True, method='min').astype(int)
+    df['rank'] = df['donkey_score'].rank(ascending=True, method='min').astype(int)
 
-    return team_score_df
+    return df
 
 def determine_ties_in_scoreboard(df):
     '''
-    Takes a scoreboard df and determines rank and handles ties
+    Takes a scoreboard df and determines rank and handles tiesself.
+
+    It's nice to have T2 on the scoreboard instead of multiple "2"s
     '''
     df_ties = df.copy()
 
@@ -244,7 +264,7 @@ def pull_scoreboard():
     '''
     Pulls aggregate game score and then adds in tie info
     '''
-    df = aggregate_team_score()
+    df = aggregate_user_scores()
     tie_df = determine_ties_in_scoreboard(df)
 
     df = df.merge(tie_df,
@@ -257,26 +277,32 @@ def calculate_cut_line():
     '''
     Pull the cut line from the tourney leaderboard table
 
-    Returns a dict
+    Returns a dict if round 2
+    Else it returns None
     '''
-    sql = yaml_sql_dict.get('calculate_cut_line')
-    df = run_sql(sql)
-    # Grab the cut_str
-    cut_str = df['pos'][0].lower()
-    cut_dict = {}
+    cur_round = determine_current_round()
 
-    # Not sure what will happen if cut is even...
-    if cut_str[-1:] == 'E':
-        cut_dict['cut_str'] = 'E'
-        cut_dict['cut_in'] = 0
+    if cur_round == 'r2':
+        sql = yaml_sql_dict.get('calculate_cut_line')
+        df = run_sql(sql)
+        # Grab the cut_str
+        cut_str = df['pos'][0].lower()
+        cut_dict = {}
+
+        # Not sure what will happen if cut is even...
+        if cut_str[-1:] == 'E':
+            cut_dict['cut_str'] = 'E'
+            cut_dict['cut_in'] = 0
+        else:
+            # Just grab the last two characters - this should be the cut score
+            cut_str = cut_str[-2:]
+            # Put both string and int representations into a dict
+            cut_dict['cut_str'] = cut_str
+            cut_dict['cut_int'] = int(cut_str.replace('+', '').replace('E', '0'))
+
+        return cut_dict
     else:
-        # Just grab the last two characters - this should be the cut score
-        cut_str = cut_str[-2:]
-        # Put both string and int representations into a dict
-        cut_dict['cut_str'] = cut_str
-        cut_dict['cut_int'] = int(cut_str.replace('+', '').replace('E', '0'))
-
-    return cut_dict
+        return None
 
 def determine_current_round():
     '''
@@ -284,7 +310,11 @@ def determine_current_round():
     calculations among other things
     '''
     df = pull_tourney_leaderboard()
-    rounds = ['r1','r2','r3','r4']
-    for round_num in rounds:
-        if df.loc[df[round_num] == '--'].shape[0] > 1:
-            return round_num
+
+    if 'fedex_pts' in df.columns:
+        return 'tourney_over'
+    else:
+        rounds = ['r1','r2','r3','r4']
+        for round_num in rounds:
+            if df.loc[df[round_num] == '--'].shape[0] > 1:
+                return round_num

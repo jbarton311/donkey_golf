@@ -20,11 +20,16 @@ pull_tourney_leaderboard:
     SELECT * from leaderboard
 
 aggregate_team_score:
-    SELECT c.id, c.username, b.* FROM teams a
-    LEFT JOIN leaderboard b
-    ON a.golfer=b.player
-    LEFT JOIN user c
-    ON a.id=c.id
+    SELECT a.id, c.username,
+    sum(b.donkey_score) as donkey_score,
+    sum(b.missed_cut) as missed_cut,
+    sum(b.player_left) as player_left
+    FROM teams a
+        LEFT JOIN leaderboard b
+        ON a.golfer=b.player
+        LEFT JOIN user c
+        ON a.id=c.id
+    GROUP BY 1,2
 
 calculate_cut_line:
     SELECT pos FROM leaderboard
