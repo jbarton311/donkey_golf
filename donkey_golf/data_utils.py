@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 import logging
 import oyaml
+from sqlalchemy import create_engine
 
 from donkey_golf import config
 
@@ -95,15 +96,20 @@ def load_table_to_db(df, tablename):
     '''
     Takes a df and tablename and loads it to our database
     '''
-    with sqlite3.connect(conf.db_location) as conn:
-        df.to_sql(tablename, conn, if_exists="replace", index=False)
+    engine = create_engine(config.DGConfig.db_url)
+    df.to_sql(tablename, engine, if_exists='replace', index=False)
+    #with sqlite3.connect(conf.db_location) as conn:
+    #df.to_sql(tablename, conn, if_exists="replace", index=False)
 
 def run_sql(sql):
     '''
     Takes a SQL and connects to database to execute passed SQL
     '''
-    with sqlite3.connect(conf.db_location) as conn:
-        return pd.read_sql_query(sql ,conn)
+    engine = create_engine(config.DGConfig.db_url)
+    return pd.read_sql_query(sql ,engine)
+
+    #with sqlite3.connect(conf.db_location) as conn:
+#        return pd.read_sql_query(sql ,conn)
 
 def data_load_leaderboard():
     result = scrape_espn_leaderboard()
