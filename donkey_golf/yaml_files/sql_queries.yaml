@@ -1,6 +1,11 @@
+login_check:
+    SELECT *
+    FROM user
+    WHERE email = '{0}'
+
 pull_available_players:
     SELECT a.*, b.current_rank, b.events_played
-    FROM pre_tourney a
+    from pre_tourney a
     LEFT JOIN rankings b
       ON a.player=b.player
     ORDER BY current_rank
@@ -12,7 +17,7 @@ users_team:
     WHERE id = {}
 
 users_team_pre_tourney:
-    SELECT * FROM teams
+    SELECT * from teams
     WHERE id = {0}
     AND tourney_id = {1}
 
@@ -24,7 +29,7 @@ aggregate_team_score:
     sum(b.donkey_score) as donkey_score,
     sum(b.missed_cut) as missed_cut,
     sum(b.player_left) as player_left
-    FROM teams a
+    from teams a
         LEFT JOIN leaderboard b
         ON a.golfer=b.player
         LEFT JOIN user c
@@ -32,7 +37,7 @@ aggregate_team_score:
     GROUP BY 1,2
 
 calculate_cut_line:
-    SELECT pos FROM leaderboard
+    SELECT pos from leaderboard
     WHERE pos LIKE ('%projected%')
       OR pos LIKE ('%failed to%')
     LIMIT 1

@@ -34,12 +34,44 @@ def register():
         return render_template('home.html')
     return render_template('register.html', title='Register', form=form)
 
-
+"""
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     # If already logged in, send them home
     if current_user.is_authenticated:
         return redirect(url_for('home'))
+
+    form = LoginForm()
+    if form.validate_on_submit():
+
+        user_df = data_utils.login_checker(form.email.data)
+
+        if user_df.empty:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+        else:
+            pw = user_df['password'][0]
+
+            # IF a user exists and their password matches, login them in
+            if bcrypt.check_password_hash(pw, form.password.data):
+                #user = User.query.filter_by(email=form.email.data).first()
+                login_user(user, remember=form.remember.data)
+
+            # This is for when someone clicks a route before they are logged in
+            # this will route them back to that route
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('home'))
+    else:
+        flash('Login Unsuccessful. Please check email and password', 'danger')
+
+    return render_template('login.html', title='Login', form=form)
+
+"""
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    # If already logged in, send them home
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     form = LoginForm()
     if form.validate_on_submit():
         # Grab the user if it exists

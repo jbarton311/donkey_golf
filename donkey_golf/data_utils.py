@@ -178,6 +178,17 @@ def data_load_rankings():
     '''
     load_table_to_db(scrape_world_rankings_data(), 'rankings')
 
+def login_checker(email):
+    '''
+    Pulls the user info for the login page
+    '''
+
+    sql = yaml_sql_dict.get('login_check')
+    sql = sql.format(email)
+    df = run_sql(sql)
+
+    return df
+
 def pull_available_players():
     '''
     Pulls a list of players to be available for the draft
