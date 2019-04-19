@@ -1,8 +1,8 @@
-import sqlite3
 import pandas as pd
 import logging
 import oyaml
 from sqlalchemy import create_engine
+import psycopg2
 
 from donkey_golf import config
 
@@ -26,6 +26,8 @@ logger.addHandler(ch)
 # Bringing in config and SQL dict
 conf = config.DGConfig()
 yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc))
+
+engine = create_engine(conf.db_url)
 
 def scrape_espn_leaderboard():
     dict = {}
@@ -96,8 +98,11 @@ def load_table_to_db(df, tablename):
     '''
     Takes a df and tablename and loads it to our database
     '''
-    engine = create_engine(config.DGConfig.db_url)
-    df.to_sql(tablename, engine, if_exists='replace', index=False)
+    #engine = create_engine(conf.db_url)
+    with engine.connect() as conn:
+        df.to_sql(tablename, conn, if_exists='replace', index=False)
+
+    #engine.dispose()
     #with sqlite3.connect(conf.db_location) as conn:
     #df.to_sql(tablename, conn, if_exists="replace", index=False)
 
@@ -105,8 +110,14 @@ def run_sql(sql):
     '''
     Takes a SQL and connects to database to execute passed SQL
     '''
-    engine = create_engine(config.DGConfig.db_url)
-    return pd.read_sql_query(sql ,engine)
+    #engine = create_engine(conf.db_url)
+    with engine.connect() as conn:
+        df = pd.read_sql(sql, conn)
+    #engine.dispose()
+
+    return df
+    #engine = create_engine(config.DGConfig.db_url)
+    #return pd.read_sql_query(sql ,engine)
 
     #with sqlite3.connect(conf.db_location) as conn:
 #        return pd.read_sql_query(sql ,conn)
