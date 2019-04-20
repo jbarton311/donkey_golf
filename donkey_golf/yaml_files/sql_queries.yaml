@@ -1,43 +1,43 @@
 login_check:
     SELECT *
-    FROM user
+    from public.user
     WHERE email = '{0}'
 
 pull_available_players:
     SELECT a.*, b.current_rank, b.events_played
-    from pre_tourney a
-    LEFT JOIN rankings b
+    from public.pre_tourney a
+    left join public.rankings b
       ON a.player=b.player
     ORDER BY current_rank
 
 users_team:
-    SELECT * from teams a
+    SELECT * from public.teams a
     INNER JOIN leaderboard b
         ON a.golfer = b.player
     WHERE id = {}
 
 users_team_pre_tourney:
-    SELECT * from teams
+    SELECT * from public.teams
     WHERE id = {0}
     AND tourney_id = {1}
 
 pull_tourney_leaderboard:
-    SELECT * from leaderboard
+    SELECT * from public.leaderboard
 
 aggregate_team_score:
     SELECT a.id, c.username,
-    sum(b.donkey_score) as donkey_score,
-    sum(b.missed_cut) as missed_cut,
-    sum(b.player_left) as player_left
-    from teams a
-        LEFT JOIN leaderboard b
+    sum(CAST(b.donkey_score as INT)) as donkey_score,
+    sum(CAST(b.missed_cut as INT)) as missed_cut,
+    sum(CAST(b.player_left as INT)) as player_left
+    from public.teams a
+        left join public.leaderboard b
         ON a.golfer=b.player
-        LEFT JOIN user c
+        left join public.user c
         ON a.id=c.id
     GROUP BY 1,2
 
 calculate_cut_line:
-    SELECT pos from leaderboard
+    SELECT pos from public.leaderboard
     WHERE pos LIKE ('%projected%')
       OR pos LIKE ('%failed to%')
     LIMIT 1

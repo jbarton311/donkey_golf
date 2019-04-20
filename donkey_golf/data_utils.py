@@ -29,10 +29,12 @@ yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc))
 
 engine = create_engine(conf.db_url)
 
-def scrape_espn_leaderboard():
+current_url = 'http://www.espn.com/golf/leaderboard/_/tournamentId/{}'.format(conf.tourney_id)
+
+def scrape_espn_leaderboard(url=current_url):
     dict = {}
     # Creating leaderboard & rankings dataframes
-    leaderboard = pd.read_html('http://www.espn.com/golf/leaderboard',header=3)[0]
+    leaderboard = pd.read_html(url,header=3)[0]
 
     leaderboard.columns = leaderboard.columns.str.lower().str.replace(' ','_')
 
