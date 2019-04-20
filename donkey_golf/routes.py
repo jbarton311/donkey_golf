@@ -1,8 +1,27 @@
+import logging
+
 from flask import render_template, url_for, flash, redirect, request
 from donkey_golf import app, db, bcrypt, data_utils, config
 from donkey_golf.forms import RegistrationForm, LoginForm
 from donkey_golf.models import User, Teams
 from flask_login import login_user, current_user, logout_user, login_required
+
+# create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
 
 conf = config.DGConfig()
 
@@ -34,38 +53,7 @@ def register():
         return render_template('home.html')
     return render_template('register.html', title='Register', form=form)
 
-"""
-@app.route("/login", methods=['GET', 'POST'])
-def login():
-    # If already logged in, send them home
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
 
-    form = LoginForm()
-    if form.validate_on_submit():
-
-        user_df = data_utils.login_checker(form.email.data)
-
-        if user_df.empty:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
-        else:
-            pw = user_df['password'][0]
-
-            # IF a user exists and their password matches, login them in
-            if bcrypt.check_password_hash(pw, form.password.data):
-                #user = User.query.filter_by(email=form.email.data).first()
-                login_user(user, remember=form.remember.data)
-
-            # This is for when someone clicks a route before they are logged in
-            # this will route them back to that route
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
-    else:
-        flash('Login Unsuccessful. Please check email and password', 'danger')
-
-    return render_template('login.html', title='Login', form=form)
-
-"""
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     # If already logged in, send them home
@@ -153,7 +141,8 @@ def how_to_play():
 @login_required
 def tourney_leaderboard():
 
-    data_utils.data_load_leaderboard()
+
+    #data_utils.data_load_leaderboard()
     df_tourney = data_utils.pull_tourney_leaderboard(user_id=current_user.id)
     #df_info = pull_tourney_info()
     #df_tiger = tiger_results(user_id=current_user.id)

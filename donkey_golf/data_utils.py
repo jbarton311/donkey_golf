@@ -3,6 +3,7 @@ import logging
 import oyaml
 from sqlalchemy import create_engine
 import psycopg2
+import logging
 
 from donkey_golf import config
 
@@ -29,17 +30,37 @@ yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc))
 
 engine = create_engine(conf.db_url)
 
-current_url = 'http://www.espn.com/golf/leaderboard/_/tournamentId/{}'.format(conf.tourney_id)
+def run_sql(sql):
+    '''
+    Takes a SQL and connects to database to execute passed SQL
+    '''
+    with engine.connect() as conn:
+        df = pd.read_sql(sql, conn)
 
-def scrape_espn_leaderboard(url=current_url):
+    return df
+
+def determine_current_tourney_id():
+    '''
+    Pull each users aggregate score for the current tourney
+    '''
+    sql = yaml_sql_dict.get('determine_current_tourney_id')
+    df = run_sql(sql)
+
+    return df['value'][0].strip()
+
+def determine_current_url():
+    tourney_id = determine_current_tourney_id()
+    url = 'http://www.espn.com/golf/leaderboard/_/tournamentId/{}'.format(tourney_id)
+    return url
+
+def scrape_espn_leaderboard(url=determine_current_url()):
     dict = {}
     # Creating leaderboard & rankings dataframes
     leaderboard = pd.read_html(url,header=3)[0]
-
     leaderboard.columns = leaderboard.columns.str.lower().str.replace(' ','_')
 
-    leaderboard['tourney_id'] = conf.tourney_id
-    print(leaderboard.columns)
+    leaderboard['tourney_id'] = determine_current_tourney_id()
+
     if leaderboard.columns.tolist() == ['player', 'tee_time','tourney_id']:
         dict['pre_tourney'] = leaderboard
 
@@ -108,21 +129,7 @@ def load_table_to_db(df, tablename):
     #with sqlite3.connect(conf.db_location) as conn:
     #df.to_sql(tablename, conn, if_exists="replace", index=False)
 
-def run_sql(sql):
-    '''
-    Takes a SQL and connects to database to execute passed SQL
-    '''
-    #engine = create_engine(conf.db_url)
-    with engine.connect() as conn:
-        df = pd.read_sql(sql, conn)
-    #engine.dispose()
 
-    return df
-    #engine = create_engine(config.DGConfig.db_url)
-    #return pd.read_sql_query(sql ,engine)
-
-    #with sqlite3.connect(conf.db_location) as conn:
-#        return pd.read_sql_query(sql ,conn)
 
 def data_load_leaderboard():
     result = scrape_espn_leaderboard()
@@ -191,17 +198,6 @@ def data_load_rankings():
     '''
     load_table_to_db(scrape_world_rankings_data(), 'rankings')
 
-def login_checker(email):
-    '''
-    Pulls the user info for the login page
-    '''
-
-    sql = yaml_sql_dict.get('login_check')
-    sql = sql.format(email)
-    df = run_sql(sql)
-
-    return df
-
 def pull_available_players():
     '''
     Pulls a list of players to be available for the draft
@@ -216,6 +212,8 @@ def pull_available_players():
 
     return df
 
+
+
 def users_team(user_id):
     '''
     Pulls leaderboard data for everyone on a given users team
@@ -224,7 +222,7 @@ def users_team(user_id):
     user_lb_sql = yaml_sql_dict.get('users_team')
 
     # Sub in users ID into the SQL
-    user_lb_sql = user_lb_sql.format(user_id)
+    user_lb_sql = user_lb_sql.format(user_id, conf.tourney_id)
 
     df_user_lb = run_sql(user_lb_sql)
 
