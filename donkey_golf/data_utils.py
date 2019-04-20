@@ -48,6 +48,15 @@ def determine_current_tourney_id():
 
     return df['value'][0].strip()
 
+def golfer_team_count():
+    '''
+    Pull each users aggregate score for the current tourney
+    '''
+    sql = yaml_sql_dict.get('golfer_team_count')
+    df = run_sql(sql)
+
+    return df
+
 def determine_current_url():
     tourney_id = determine_current_tourney_id()
     url = 'http://www.espn.com/golf/leaderboard/_/tournamentId/{}'.format(tourney_id)
@@ -125,12 +134,6 @@ def load_table_to_db(df, tablename):
     with engine.connect() as conn:
         df.to_sql(tablename, conn, if_exists='replace', index=False)
 
-    #engine.dispose()
-    #with sqlite3.connect(conf.db_location) as conn:
-    #df.to_sql(tablename, conn, if_exists="replace", index=False)
-
-
-
 def data_load_leaderboard():
     result = scrape_espn_leaderboard()
     if 'pre_tourney' in result.keys():
@@ -143,6 +146,7 @@ def data_load_leaderboard():
             df = result.get('in_progress')
             df = add_donkey_game_score(df)
             df = add_player_left_indicator(df)
+            df = add_golfer_team_count(df)
             load_table_to_db(df, 'leaderboard')
 
 def add_donkey_game_score(df):
@@ -191,6 +195,20 @@ def add_player_left_indicator(df):
 
     return df
 
+def add_golfer_team_count(df):
+    '''
+    This should add a column 'team_count'
+    indicating the amount of teams a player is on
+    '''
+    logger.debug("Adding golfer team count")
+    df = df.merge(golfer_team_count(),
+        how='left',
+        on='player')
+
+    df['team_count'] = df['team_count'].fillna(0.0).astype(int).astype(str)
+    logger.debug(df.columns)
+
+    return df
 
 def data_load_rankings():
     '''
@@ -247,12 +265,14 @@ def pull_tourney_leaderboard(user_id=None):
     if user_id:
         user_df = users_team(user_id)
 
-        df = df.merge(user_df[['golfer']],
+        df = df.merge(user_df[['player','id']],
             how='left',
-            left_on=['player'],
-            right_on=['golfer'])
+            on=['player'])
 
-        df.loc[df['golfer'].notnull(), 'on_team'] = 'Yes'
+        df['on_team'] = 'No'
+        df.loc[df['id'].notnull(), 'on_team'] = 'Yes'
+
+        df = df.drop('id', axis=1)
 
     return df
 

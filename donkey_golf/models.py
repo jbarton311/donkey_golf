@@ -17,11 +17,13 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
+"""
 class Teams(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
     tourney_id = db.Column(db.String(60), primary_key=True, nullable=False)
-    golfer = db.Column(db.String(50), primary_key=True)
+    player = db.Column(db.String(50), primary_key=True)
 
     def __repr__(self):
         return "Here is the squad"
+"""

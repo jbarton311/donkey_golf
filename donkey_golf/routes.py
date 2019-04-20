@@ -3,7 +3,7 @@ import logging
 from flask import render_template, url_for, flash, redirect, request
 from donkey_golf import app, db, bcrypt, data_utils, config
 from donkey_golf.forms import RegistrationForm, LoginForm
-from donkey_golf.models import User, Teams
+from donkey_golf.models import User
 from flask_login import login_user, current_user, logout_user, login_required
 
 # create logger
