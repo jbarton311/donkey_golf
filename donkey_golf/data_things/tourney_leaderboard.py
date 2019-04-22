@@ -337,3 +337,4 @@ class PullLeaderboard(BaseClass):
 
     def run(self):
         self.pull_tourney_leaderboard()
+        self.determine_tourney_status()

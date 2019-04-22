@@ -151,10 +151,11 @@ def tourney_leaderboard():
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
     leaderboard.pull_tourney_leaderboard()
     df_tourney = leaderboard.data
-    #data_utils.data_load_leaderboard()
-    #df_tourney = data_utils.pull_tourney_leaderboard(user_id=current_user.id)
-    #df_info = pull_tourney_info()
-    #df_tiger = tiger_results(user_id=current_user.id)
+    tourney_status = leaderboard.tourney_status
+
+    tourney_data = dt.TournamentInfo()
+    tourney_data.pull_tourney_info()
+    t_info = tourney_data.tourney_data
 
     try:
         cut_dict = leaderboard.calculate_cut_line()
@@ -164,7 +165,9 @@ def tourney_leaderboard():
     return render_template('tourney_leaderboard.html',
                            title='Tourney Leaderboard',
                            df_tourney=df_tourney,
-                           cut_dict=cut_dict)
+                           cut_dict=cut_dict,
+                           t_info=t_info,
+                           tourney_status=tourney_status)
 
 @app.route("/game_scoreboard")
 @login_required
@@ -175,11 +178,19 @@ def game_scoreboard():
     df_sb = scoreboard.data
 
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
-    leaderboard.pull_tourney_leaderboard()
+    leaderboard.run()
     df_tourney = leaderboard.data
     df_tourney = df_tourney.loc[df_tourney['team_count'] > 0]
+
+    tourney_status = leaderboard.tourney_status
+
+    tourney_info = dt.TournamentInfo()
+    tourney_info.pull_tourney_info()
+    t_info = tourney_info.tourney_data
 
     return render_template('game_scoreboard.html',
                            title='Donkey Leaderboard',
                            df_sb=df_sb,
-                           df_tourney=df_tourney)
+                           df_tourney=df_tourney,
+                           t_info=t_info,
+                           tourney_status=tourney_status)

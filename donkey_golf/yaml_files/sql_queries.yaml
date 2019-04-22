@@ -50,3 +50,6 @@ golfer_team_count:
     where tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
     group by player
     order by 2 DESC
+
+tourney_info:
+    SELECT * FROM public.tourney_info

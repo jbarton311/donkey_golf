@@ -58,3 +58,14 @@ class TournamentInfo(BaseClass):
         self.pull_current_tourney_data()
         self.convert_to_dataframe()
         self.load_table_to_db(self.data, 'tourney_info')
+
+
+    def pull_tourney_info(self):
+        '''
+        Pull each users aggregate score for the current tourney
+        '''
+        logger.info("Pulling tourney info")
+        sql = self.yaml_sql_dict.get('tourney_info')
+        df = self.run_sql(sql)
+
+        self.tourney_data = df.copy()

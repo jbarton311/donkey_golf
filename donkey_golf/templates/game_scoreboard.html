@@ -1,6 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<h4 style="text-align:center">{{t_info['tourney_name'][0]}}</h4>
+ <h6 style="text-align:center; padding-bottom:5px;">{{t_info['course_name'][0]}}</h6>
+
+<div class="container" style="text-align:center;">
+ <a href="#" style="text-align:center" data-toggle="collapse" data-target="#demo">Tourney Details <span class="glyphicon glyphicon-arrow-down"></span></a>
+
+ <div id="demo" class="collapse in">
+   <font size="2" face="Arial">
+     <div>
+         <span>{{t_info['tourney_dates'][0]}}</span><br>
+         <span>Current Status: {{tourney_status}}</span><br>
+         <span>Purse: {{t_info['tourney_purse'][0]}}</span><br>
+         <span>Defending Champ: {{t_info['tourney_defending_champ'][0]}}</span><br>
+
+     </div>
+   </font>
+ </div>
+</div>
+
+
 <h5 style="text-align:center;"> Game Scoreboard </h5>
 
 
