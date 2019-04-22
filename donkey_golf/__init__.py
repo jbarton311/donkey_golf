@@ -15,4 +15,4 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
 #from donkey_golf import routes, data_utils, config
-from donkey_golf import routes, data_utils
+from donkey_golf import routes, data_utils, data_things

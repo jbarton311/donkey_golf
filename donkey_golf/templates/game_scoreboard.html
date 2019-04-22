@@ -2,8 +2,6 @@
 {% block content %}
 
 <h5 style="text-align:center;"> Game Scoreboard </h5>
-<font size="2" face="Arial">
-</font>
 
 
 <font size="2" face="Arial">
@@ -39,5 +37,43 @@
     </tbody>
   </table>
 </font>
+
+
+
+<h5 style="text-align:center;"> Drafted Donks </h5>
+
+<font size="2" face="Arial">
+<table class="table table-sm jtable">
+    <thead>
+      <tr>
+        <th>POS</th>
+        <th>PLAYER</th>
+        <th>TO PAR</th>
+        <th>TEAMS</th>
+        <th>CUT?</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for i, row in df_tourney.iterrows() %}
+      {% if row['on_team'] == 'Yes' %}
+        <tr class="slate-gray text-white">
+      {% else %}
+        <tr>
+      {% endif %}
+          <td>{{row['pos']}}</td>
+          <td>
+            {{row['player']}}
+        </td>
+
+          <td>{{row['to_par']}}</td>
+          <td>{{row['team_count']}}</td>
+          <td>{{row['missed_cut']}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
 
 {% endblock content %}

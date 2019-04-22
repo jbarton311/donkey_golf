@@ -2,6 +2,7 @@ import logging
 
 from flask import render_template, url_for, flash, redirect, request
 from donkey_golf import app, db, bcrypt, data_utils, config
+from donkey_golf import data_things as dt
 from donkey_golf.forms import RegistrationForm, LoginForm
 from donkey_golf.models import User
 from flask_login import login_user, current_user, logout_user, login_required
@@ -141,9 +142,11 @@ def how_to_play():
 @login_required
 def tourney_leaderboard():
 
-
+    leaderboard = dt.PullLeaderboard(user_id=current_user.id)
+    leaderboard.pull_tourney_leaderboard()
+    df_tourney = leaderboard.data
     #data_utils.data_load_leaderboard()
-    df_tourney = data_utils.pull_tourney_leaderboard(user_id=current_user.id)
+    #df_tourney = data_utils.pull_tourney_leaderboard(user_id=current_user.id)
     #df_info = pull_tourney_info()
     #df_tiger = tiger_results(user_id=current_user.id)
 
@@ -160,7 +163,17 @@ def tourney_leaderboard():
 @app.route("/game_scoreboard")
 @login_required
 def game_scoreboard():
-    df_sb = data_utils.pull_scoreboard()
+
+    scoreboard = dt.GameScoreboard()
+    scoreboard.run()
+    df_sb = scoreboard.data
+
+    leaderboard = dt.PullLeaderboard(user_id=current_user.id)
+    leaderboard.pull_tourney_leaderboard()
+    df_tourney = leaderboard.data
+    df_tourney = df_tourney.loc[df_tourney['team_count'] > 0]
+
     return render_template('game_scoreboard.html',
                            title='Donkey Leaderboard',
-                           df_sb=df_sb)
+                           df_sb=df_sb,
+                           df_tourney=df_tourney)

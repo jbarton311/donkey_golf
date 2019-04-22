@@ -26,16 +26,17 @@ logger.addHandler(ch)
 
 # Bringing in config and SQL dict
 conf = config.DGConfig()
-yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc))
-
-engine = create_engine(conf.db_url)
+yaml_sql_dict = oyaml.load(open(conf.yaml_sql_loc), Loader=oyaml.FullLoader)
 
 def run_sql(sql):
     '''
     Takes a SQL and connects to database to execute passed SQL
     '''
-    with engine.connect() as conn:
+    #engine = create_engine(conf.db_url)
+    #with engine.connect() as conn:
+    with psycopg2.connect(conf.db_url) as conn:
         df = pd.read_sql(sql, conn)
+    conn.close()
 
     return df
 
@@ -205,7 +206,7 @@ def add_golfer_team_count(df):
         how='left',
         on='player')
 
-    df['team_count'] = df['team_count'].fillna(0.0).astype(int).astype(str)
+    df['team_count'] = df['team_count'].fillna(0.0).astype(int)
     logger.debug(df.columns)
 
     return df
@@ -274,6 +275,7 @@ def pull_tourney_leaderboard(user_id=None):
 
         df = df.drop('id', axis=1)
 
+    df['team_count'] = df['team_count'].astype(int)
     return df
 
 def aggregate_user_scores():
