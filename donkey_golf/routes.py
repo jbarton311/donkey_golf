@@ -1,7 +1,7 @@
 import logging
 
 from flask import render_template, url_for, flash, redirect, request
-from donkey_golf import app, db, bcrypt, data_utils, config
+from donkey_golf import app, db, bcrypt, config
 from donkey_golf import data_things as dt
 from donkey_golf.forms import RegistrationForm, LoginForm
 from donkey_golf.models import User
@@ -103,8 +103,10 @@ def my_team():
         return render_template('user_team.html', title='My Team',
                                user_id=current_user.id, team=df_team_results)
 
+    draft = DraftDay()
+    draft.run()
     # Pull a list of available players and rankings
-    lb_df = data_utils.pull_available_players()
+    lb_df = draft.data
 
     if request.method == 'POST':
         team_list = request.form.getlist('team_list')
@@ -136,7 +138,7 @@ def my_team():
             flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
 
     return render_template('available_players.html', title='Players',
-                            df=data_utils.pull_available_players())
+                            df=lb_df)
 
 @app.route("/how_to_play")
 def how_to_play():
@@ -155,7 +157,7 @@ def tourney_leaderboard():
     #df_tiger = tiger_results(user_id=current_user.id)
 
     try:
-        cut_dict = data_utils.calculate_cut_line()
+        cut_dict = leaderboard.calculate_cut_line()
     except Exception as e:
         cut_dict = None
 

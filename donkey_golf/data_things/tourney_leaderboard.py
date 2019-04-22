@@ -190,6 +190,8 @@ class LoadLeaderboard(BaseClass):
         elif self.tourney_status == 'pre_tourney':
             self.prepare_pre_tourney_data()
 
+
+
     def load_leaderboard_to_db(self):
         '''
         Take self.data and load it into the appropriate table based
@@ -283,6 +285,62 @@ class PullLeaderboard(BaseClass):
             # Sub in users ID into the SQL
             sql = sql.format(self.user_id, self.tourney_id)
             self.user_df = self.run_sql(sql)
+
+    def determine_current_round(self):
+        '''
+        Figure out which round is in progress. Will be helpful for cut
+        calculations among other things
+        '''
+        logger.info("Determining the current round")
+        df = self.data.copy()
+
+        df = df.loc[df['missed_cut'] == 0]
+
+        current_round = None
+
+        if 'fedex_pts' in df.columns:
+            current_round = 'finished'
+        else:
+            rounds = ['r1','r2','r3','r4']
+            for round_num in rounds:
+                if df.loc[df[round_num] == '--'].shape[0] > 1:
+                    current_round = round_num
+        logger.info(f"Determined the current round to be {current_round}")
+
+        return current_round
+
+    def calculate_cut_line(self):
+        '''
+        Pull the cut line from the tourney leaderboard table
+
+        Returns a dict if round 2
+        Else it returns None
+        '''
+        logger.info("Running calculate cut line")
+        cur_round = self.determine_current_round()
+
+        if cur_round == 'r2':
+            sql = self.yaml_sql_dict.get('calculate_cut_line')
+            df = self.run_sql(sql)
+            # Grab the cut_str
+            cut_str = df['pos'][0].lower()
+            cut_dict = {}
+
+            # Not sure what will happen if cut is even...
+            if cut_str[-1:] == 'E':
+                cut_dict['cut_str'] = 'E'
+                cut_dict['cut_in'] = 0
+            else:
+                # Just grab the last two characters - this should be the cut score
+                cut_str = cut_str[-2:]
+                # Put both string and int representations into a dict
+                cut_dict['cut_str'] = cut_str
+                cut_dict['cut_int'] = int(cut_str.replace('+', '').replace('E', '0'))
+
+            return cut_dict
+        else:
+            logger.info("Dont need to worry about the cut line now")
+            return None
 
     def run(self):
         self.pull_tourney_leaderboard()
