@@ -92,7 +92,11 @@ def account():
 def my_team():
 
     # Pull users team
-    df_team_results = data_utils.users_team(current_user.id)
+    leaderboard = dt.PullLeaderboard(user_id=current_user.id)
+    leaderboard.pull_tourney_leaderboard()
+    df_team_results = leaderboard.user_df
+
+    #df_team_results = data_utils.users_team(current_user.id)
 
     # If they have a team, take them to their team
     if not df_team_results.empty:

@@ -6,7 +6,7 @@ import psycopg2
 from sqlalchemy import create_engine
 
 from donkey_golf import config
-
+from .base_class import BaseClass
 
 # create logger
 logger = logging.getLogger(__name__)

@@ -6,7 +6,7 @@ import psycopg2
 from sqlalchemy import create_engine
 
 from donkey_golf import config
-
+from .base_class import BaseClass
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -25,46 +25,7 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
-class BaseClass():
-
-    def __init__(self, **kwargs):
-        logger.debug("ABOUT TO SET yaml_sql_dict")
-        self.conf = config.DGConfig()
-        self.yaml_sql_dict = oyaml.load(open(self.conf.yaml_sql_loc), Loader=oyaml.FullLoader)
-        self.tourney_id = self.determine_current_tourney_id()
-
-    def run_sql(self, sql):
-        '''
-        Takes a SQL and connects to database to execute passed SQL
-        '''
-        #engine = create_engine(self.conf.db_url)
-        with psycopg2.connect(self.conf.db_url) as conn:
-        #with engine.connect() as conn:
-            df = pd.read_sql(sql, conn)
-
-        conn.close()
-
-        return df
-
-    def load_table_to_db(self, df, tablename):
-        '''
-        Takes a df and tablename and loads it to our database
-        '''
-        engine = create_engine(self.conf.db_url)
-
-        with engine.connect() as conn:
-            df.to_sql(tablename, conn, if_exists='replace', index=False)
-
-    def determine_current_tourney_id(self):
-        '''
-        Pull each users aggregate score for the current tourney
-        '''
-        sql = self.yaml_sql_dict.get('determine_current_tourney_id')
-        df = self.run_sql(sql)
-
-        return df['value'][0].strip()
-
-class Leaderboard(BaseClass):
+class LoadLeaderboard(BaseClass):
 
     def __init__(self):
         BaseClass.__init__(self)
@@ -322,3 +283,6 @@ class PullLeaderboard(BaseClass):
             # Sub in users ID into the SQL
             sql = sql.format(self.user_id, self.tourney_id)
             self.user_df = self.run_sql(sql)
+
+    def run(self):
+        self.pull_tourney_leaderboard()
