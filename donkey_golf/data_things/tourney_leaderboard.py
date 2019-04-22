@@ -29,13 +29,6 @@ class LoadLeaderboard(BaseClass):
 
     def __init__(self):
         BaseClass.__init__(self)
-        self.determine_current_url()
-
-    def determine_current_url(self):
-        '''
-        Returns the specific URL we want to scrape from
-        '''
-        self.url_lb = 'http://www.espn.com/golf/leaderboard/_/tournamentId/{}'.format(self.tourney_id)
 
     def scrape_espn_leaderboard(self, url):
         '''

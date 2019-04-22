@@ -31,6 +31,13 @@ class BaseClass():
         self.conf = config.DGConfig()
         self.yaml_sql_dict = oyaml.load(open(self.conf.yaml_sql_loc), Loader=oyaml.FullLoader)
         self.tourney_id = self.determine_current_tourney_id()
+        self.determine_current_url()
+
+    def determine_current_url(self):
+        '''
+        Returns the specific URL we want to scrape from
+        '''
+        self.url_lb = 'http://www.espn.com/golf/leaderboard/_/tournamentId/{}'.format(self.tourney_id)
 
     def run_sql(self, sql):
         '''
