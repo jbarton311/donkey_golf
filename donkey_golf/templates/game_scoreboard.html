@@ -58,28 +58,33 @@
       <tr id="{{row['username']}}" class="collapse out">
         <td colspan=4>
           <font size="1" face="Arial">
-          <table class="table table-sm">
-              <thead>
-                <tr>
-                  <th>RANK</th>
-                  <th>PLAYER</th>
-                  <th>SCORE</th>
-                  <th>CUT</th>
-                  <th>IN PLAY</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>
-                      RORYYYY
-                  </td>
-                    <td>-5</td>
-                    <td>NAH</td>
-                    <td>Yep</td>
-                    </tr>
-              </tbody>
-            </table>
+            <font size="2" face="Arial">
+            <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>POS</th>
+                    <th>PLAYER</th>
+                    <th>TO PAR</th>
+                    <th>TEAMS</th>
+                    <th>CUT?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i, row in team_player_df.loc[team_player_df['id'] == 5].iterrows() %}
+                    <tr>
+                      <td>{{row['pos']}}</td>
+                      <td>
+                        {{row['player']}}
+                    </td>
+
+                      <td>{{row['to_par']}}</td>
+                      <td>{{row['team_count']}}</td>
+                      <td>{{row['missed_cut']}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </font>
           </font>
       </td>
       </tr>
@@ -96,27 +101,34 @@
 </font>
 
 
+
+<h1 style="text-align:center;"> TEAM TEST </h1>
+
 <font size="2" face="Arial">
-<table class="table table-sm jtable">
+<table class="table table-sm">
     <thead>
       <tr>
-        <th>RANK</th>
+        <th>POS</th>
         <th>PLAYER</th>
-        <th>SCORE</th>
-        <th>CUT</th>
-        <th>IN PLAY</th>
+        <th>TO PAR</th>
+        <th>TEAMS</th>
+        <th>CUT?</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-          <td>1</td>
+
+      {% for i, row in team_player_df.loc[team_player_df['id'] == 5].iterrows() %}
+        <tr>
+          <td>{{row['pos']}}</td>
           <td>
-            RORYYYY
+            {{row['player']}}
         </td>
-          <td>-5</td>
-          <td>NAH</td>
-          <td>Yep</td>
-          </tr>
+
+          <td>{{row['to_par']}}</td>
+          <td>{{row['team_count']}}</td>
+          <td>{{row['missed_cut']}}</td>
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 </font>

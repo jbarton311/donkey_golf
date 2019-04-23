@@ -55,7 +55,7 @@ tourney_info:
     SELECT * FROM public.tourney_info
 
 scoreboard_users_team:
-    select * from teams a
+    select a.id, b.username, c.* from teams a
     left join public.user b on a.id=b.id
     left join leaderboard c on a.player=c.player
-    AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');
+    AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');  

@@ -189,7 +189,6 @@ def game_scoreboard():
     tourney_info.pull_tourney_info()
     t_info = tourney_info.tourney_data
 
-
     team_by_player = dt.TeamPlayerResults()
     team_by_player.run()
     team_player_df = team_by_player.data
@@ -199,4 +198,5 @@ def game_scoreboard():
                            df_sb=df_sb,
                            df_tourney=df_tourney,
                            t_info=t_info,
-                           tourney_status=tourney_status)
+                           tourney_status=tourney_status,
+                           team_player_df=team_player_df)
