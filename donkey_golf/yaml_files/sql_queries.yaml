@@ -9,7 +9,7 @@ users_team:
     SELECT a.id, b.* from public.teams a
     INNER JOIN leaderboard b
         ON a.player = b.player
-    WHERE a.id = 5
+    WHERE a.id = {0}
     AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
 
 users_team_pre_tourney:
@@ -53,3 +53,9 @@ golfer_team_count:
 
 tourney_info:
     SELECT * FROM public.tourney_info
+
+scoreboard_users_team:
+    select * from teams a
+    left join public.user b on a.id=b.id
+    left join leaderboard c on a.player=c.player
+    AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');

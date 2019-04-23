@@ -90,7 +90,7 @@ def account():
 @app.route("/my_team", methods=['GET', 'POST'])
 @login_required
 def my_team():
-
+    logger.debug(f"CURRENT USER ID is {current_user.id}")
     # Pull users team
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
     leaderboard.pull_tourney_leaderboard()
@@ -100,6 +100,7 @@ def my_team():
 
     # If they have a team, take them to their team
     if not df_team_results.empty:
+        logger.warning("Taking them to their user page")
         return render_template('user_team.html', title='My Team',
                                user_id=current_user.id, team=df_team_results)
 
@@ -187,6 +188,11 @@ def game_scoreboard():
     tourney_info = dt.TournamentInfo()
     tourney_info.pull_tourney_info()
     t_info = tourney_info.tourney_data
+
+
+    team_by_player = dt.TeamPlayerResults()
+    team_by_player.run()
+    team_player_df = team_by_player.data
 
     return render_template('game_scoreboard.html',
                            title='Donkey Leaderboard',
