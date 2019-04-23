@@ -44,20 +44,82 @@
         <tr>
       {% endif %}
           <td>{{row['final_rank']}}</td>
-
           <td>
-            {{row['username']}}
+            <a data-toggle="collapse" href="#" data-target="#{{row['username']}}">
+                            {{row['username']}}
+            </a>
         </td>
 
           <td>{{row['donkey_score']}}</td>
           <td>{{row['missed_cut']}}</td>
           <td>{{row['player_left']}}</td>
       </tr>
+
+      <tr id="{{row['username']}}" class="collapse out">
+        <td colspan=4>
+          <font size="1" face="Arial">
+          <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>RANK</th>
+                  <th>PLAYER</th>
+                  <th>SCORE</th>
+                  <th>CUT</th>
+                  <th>IN PLAY</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>
+                      RORYYYY
+                  </td>
+                    <td>-5</td>
+                    <td>NAH</td>
+                    <td>Yep</td>
+                    </tr>
+              </tbody>
+            </table>
+          </font>
+      </td>
+      </tr>
+<!--
+        <tr id="{{row['username']}}" class="collapse out">
+          <p> COME ON </p>
+        </tr>
+-->
+
+
       {% endfor %}
     </tbody>
   </table>
 </font>
 
+
+<font size="2" face="Arial">
+<table class="table table-sm jtable">
+    <thead>
+      <tr>
+        <th>RANK</th>
+        <th>PLAYER</th>
+        <th>SCORE</th>
+        <th>CUT</th>
+        <th>IN PLAY</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+          <td>1</td>
+          <td>
+            RORYYYY
+        </td>
+          <td>-5</td>
+          <td>NAH</td>
+          <td>Yep</td>
+          </tr>
+    </tbody>
+  </table>
+</font>
 
 
 <h5 style="text-align:center;"> Drafted Donks </h5>
