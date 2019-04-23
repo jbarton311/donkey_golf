@@ -59,27 +59,27 @@
         <td colspan=4>
           <font size="1" face="Arial">
             <font size="2" face="Arial">
-            <table class="table table-sm">
+            <table class="table table-sm jtable">
                 <thead>
                   <tr>
                     <th>POS</th>
                     <th>PLAYER</th>
                     <th>TO PAR</th>
                     <th>TEAMS</th>
-                    <th>CUT?</th>
+                    <th>SCORE</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for i, row in team_player_df.loc[team_player_df['id'] == 5].iterrows() %}
+                  {% for i, row2 in team_player_df.loc[team_player_df['id'] == row['id']].iterrows() %}
                     <tr>
-                      <td>{{row['pos']}}</td>
+                      <td>{{row2['pos']}}</td>
                       <td>
-                        {{row['player']}}
+                        {{row2['player']}}
                     </td>
 
-                      <td>{{row['to_par']}}</td>
-                      <td>{{row['team_count']}}</td>
-                      <td>{{row['missed_cut']}}</td>
+                      <td>{{row2['to_par']}}</td>
+                      <td>{{row2['team_count']}}</td>
+                      <td>{{row2['donkey_score']}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -87,46 +87,6 @@
             </font>
           </font>
       </td>
-      </tr>
-<!--
-        <tr id="{{row['username']}}" class="collapse out">
-          <p> COME ON </p>
-        </tr>
--->
-
-
-      {% endfor %}
-    </tbody>
-  </table>
-</font>
-
-
-
-<h1 style="text-align:center;"> TEAM TEST </h1>
-
-<font size="2" face="Arial">
-<table class="table table-sm">
-    <thead>
-      <tr>
-        <th>POS</th>
-        <th>PLAYER</th>
-        <th>TO PAR</th>
-        <th>TEAMS</th>
-        <th>CUT?</th>
-      </tr>
-    </thead>
-    <tbody>
-
-      {% for i, row in team_player_df.loc[team_player_df['id'] == 5].iterrows() %}
-        <tr>
-          <td>{{row['pos']}}</td>
-          <td>
-            {{row['player']}}
-        </td>
-
-          <td>{{row['to_par']}}</td>
-          <td>{{row['team_count']}}</td>
-          <td>{{row['missed_cut']}}</td>
       </tr>
       {% endfor %}
     </tbody>
