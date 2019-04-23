@@ -55,6 +55,10 @@
           <td>{{row['player_left']}}</td>
       </tr>
 
+
+<!-- This piece of the code will allow a user to expand a persons teams
+and see who they drafted and how they did. It will pop out as a small table
+under the selected user -->
       <tr id="{{row['username']}}" class="collapse out">
         <td colspan=4>
           <font size="1" face="Arial">
@@ -70,6 +74,8 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <!-- We are already looping thru the main dataframe, so we need to
+                    use row2 so we have access to both dataframes while we loop -->
                   {% for i, row2 in team_player_df.loc[team_player_df['id'] == row['id']].iterrows() %}
                     <tr>
                       <td>{{row2['pos']}}</td>
