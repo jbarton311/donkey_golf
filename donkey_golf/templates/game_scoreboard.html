@@ -44,11 +44,20 @@
         <tr>
       {% endif %}
           <td>{{row['final_rank']}}</td>
-          <td>
-            <a data-toggle="collapse" href="#" data-target="#{{row['username']}}">
-                            {{row['username']}}
-            </a>
-        </td>
+
+            <td>
+          {% if row['username'] == current_user.username %}
+          <a data-toggle="collapse" href="#" data-target="#{{row['username']}}" style="color: white">
+                          {{row['username']}}
+          </a>
+          {% else %}
+          <a data-toggle="collapse" href="#" data-target="#{{row['username']}}">
+                          {{row['username']}}
+          </a>
+          {% endif %}
+          </td>
+
+
 
           <td>{{row['donkey_score']}}</td>
           <td>{{row['missed_cut']}}</td>
@@ -60,10 +69,10 @@
 and see who they drafted and how they did. It will pop out as a small table
 under the selected user -->
       <tr id="{{row['username']}}" class="collapse out">
-        <td colspan=4>
+        <td colspan=5>
           <font size="1" face="Arial">
             <font size="1" face="Arial">
-            <table class="table table-sm jtable">
+            <table class="table table-sm tinytable1 table-striped">
                 <thead>
                   <tr>
                     <th>POS</th>

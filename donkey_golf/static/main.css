@@ -23,6 +23,13 @@ font-family:"Arial";
 padding:3px;
 }
 
+.tinytable1>thead {
+background-color: #646464;
+color:white;
+font-family:"Arial";
+padding:3px;
+}
+
 .slate-gray{
   background-color:#708090;
 }
