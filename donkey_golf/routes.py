@@ -4,7 +4,7 @@ from flask import render_template, url_for, flash, redirect, request
 from donkey_golf import app, db, bcrypt, config
 from donkey_golf import data_things as dt
 from donkey_golf.forms import RegistrationForm, LoginForm
-from donkey_golf.models import User
+from donkey_golf.models import User, Teams
 from flask_login import login_user, current_user, logout_user, login_required
 
 # create logger
@@ -104,7 +104,7 @@ def my_team():
         return render_template('user_team.html', title='My Team',
                                user_id=current_user.id, team=df_team_results)
 
-    draft = DraftDay()
+    draft = dt.DraftDay()
     draft.run()
     # Pull a list of available players and rankings
     lb_df = draft.data

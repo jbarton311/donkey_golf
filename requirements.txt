@@ -13,6 +13,7 @@ Flask-Bcrypt==0.7.1
 Flask-Login==0.4.1
 Flask-SQLAlchemy==2.3.2
 Flask-WTF==0.14.2
+html5lib==1.0.1
 idna==2.8
 ipykernel==5.1.0
 ipython==7.4.0
@@ -47,5 +48,6 @@ tornado==6.0.2
 traitlets==4.3.2
 urllib3==1.24.2
 wcwidth==0.1.7
+webencodings==0.5.1
 Werkzeug==0.15.2
 WTForms==2.2.1

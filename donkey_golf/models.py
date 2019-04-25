@@ -17,7 +17,7 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
 
-"""
+
 class Teams(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
@@ -26,4 +26,3 @@ class Teams(db.Model):
 
     def __repr__(self):
         return "Here is the squad"
-"""

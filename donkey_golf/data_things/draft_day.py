@@ -34,9 +34,9 @@ class DraftDay(BaseClass):
         Pulls a list of players to be available for the draft
         '''
         logger.info("Pulling a list of available players for the draft")
-        sql = self.yaml_sql_dict.get('pull_available_players')
+        self.sql = self.yaml_sql_dict.get('pull_available_players')
 
-        df = self.run_sql(sql)
+        df = self.run_sql(self.sql)
 
         df['rank'] = df['current_rank'].rank(ascending=True, method='min')
         df['tier'] = 'Tier 2'
