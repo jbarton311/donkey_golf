@@ -1,9 +1,9 @@
 pull_available_players:
-    SELECT a.*, b.current_rank, b.events_played
+    SELECT a.player, b.current_rank, b.events_played
     from public.pre_tourney a
     left join public.rankings b
       ON a.player=b.player
-    ORDER BY current_rank
+    ORDER BY b.current_rank
 
 users_team:
     SELECT a.id, b.* from public.teams a
@@ -58,4 +58,4 @@ scoreboard_users_team:
     select a.id, b.username, c.* from teams a
     left join public.user b on a.id=b.id
     left join leaderboard c on a.player=c.player
-    AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');  
+    WHERE a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');

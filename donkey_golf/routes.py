@@ -127,11 +127,15 @@ def my_team():
             try:
                 for golfer in team_list:
                     entry = Teams(id=current_user.id,
-                                  tourney_id=conf.tourney_id,
-                                  golfer=golfer)
+                                  tourney_id=leaderboard.tourney_id,
+                                  player=golfer)
                     db.session.add(entry)
                     db.session.commit()
                 flash('Congrats - you have selected a team!', 'success')
+                logger.warning("Taking them to their user page")
+                return render_template('user_team.html', title='My Team',
+                                       user_id=current_user.id, team=df_team_results)
+
             except Exception as e:
                 flash("Uh Oh - Weird Error", 'danger')
                 flash(f'{e}', 'info')

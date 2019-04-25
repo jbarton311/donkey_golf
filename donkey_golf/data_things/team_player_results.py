@@ -32,9 +32,9 @@ class TeamPlayerResults(BaseClass):
         Pulls full team results by player
         '''
         logger.info("Pulling full team results by player")
-        sql = self.yaml_sql_dict.get('scoreboard_users_team')
+        self.sql = self.yaml_sql_dict.get('scoreboard_users_team')
 
-        df = self.run_sql(sql)
+        df = self.run_sql(self.sql)
 
         self.data = df.copy()
 
