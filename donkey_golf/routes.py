@@ -46,7 +46,8 @@ def register():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 
         # Save their data to the db
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        email = form.email.data.lower()
+        user = User(username=form.username.data, email=email, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -63,8 +64,12 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
+
+        # All emails are stored in lower case
+        # and will be validated with lower case 
+        email = form.email.data.lower()
         # Grab the user if it exists
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(email=email).first()
         # IF a user exists and their password matches, login them in
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
