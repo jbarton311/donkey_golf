@@ -31,6 +31,10 @@ conf = config.DGConfig()
 def home():
     return render_template('home.html')
 
+@app.route("/home_v2")
+def home_v2():
+    return render_template('home_v2.html')
+
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
@@ -66,7 +70,7 @@ def login():
     if form.validate_on_submit():
 
         # All emails are stored in lower case
-        # and will be validated with lower case 
+        # and will be validated with lower case
         email = form.email.data.lower()
         # Grab the user if it exists
         user = User.query.filter_by(email=email).first()

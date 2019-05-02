@@ -11,9 +11,9 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
     {% if title %}
-        <title>Clown Golf: {{ title }}</title>
+        <title>Donkey Golf: {{ title }}</title>
     {% else %}
-        <title>Clown Golf</title>
+        <title>Donkey Golf</title>
     {% endif %}
   </head>
 
@@ -32,6 +32,9 @@
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('home')}}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('home_v2')}}">Home V2 </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('my_team')}}">My Team</a>
