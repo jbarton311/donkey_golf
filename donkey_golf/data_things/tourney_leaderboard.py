@@ -207,8 +207,7 @@ class LoadLeaderboard(BaseClass):
         # Clean data - smart enough to determine pre_tourney or in-progress data
         self.clean_data()
 
-        # Don't need this right now
-        #self.load_leaderboard_to_db()
+        self.load_leaderboard_to_db()
 
 class PullLeaderboard(BaseClass):
 
@@ -225,8 +224,8 @@ class PullLeaderboard(BaseClass):
         Pulls leaderboard data for the tourney
         '''
 
-        sql = self.yaml_sql_dict.get('pull_tourney_leaderboard')
-        self.data = self.run_sql(sql)
+        self.sql = self.yaml_sql_dict.get('pull_tourney_leaderboard')
+        self.data = self.run_sql(self.sql)
         self.determine_tourney_status()
 
         if self.user_id and self.tourney_status in ['in_progress','finished']:
