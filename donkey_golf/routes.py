@@ -142,6 +142,11 @@ def my_team():
                     db.session.commit()
                 flash('Congrats - you have selected a team!', 'success')
                 logger.warning("Taking them to their user page")
+
+                # Make sure there team displays correctly after they draft
+                leaderboard = dt.PullLeaderboard(user_id=current_user.id)
+                leaderboard.pull_tourney_leaderboard()
+                df_team_results = leaderboard.user_df
                 return render_template('user_team.html', title='My Team',
                                        user_id=current_user.id, team=df_team_results)
 
