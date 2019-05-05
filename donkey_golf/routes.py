@@ -163,9 +163,10 @@ def how_to_play():
 def tourney_leaderboard():
 
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
-    leaderboard.pull_tourney_leaderboard()
+    leaderboard.run()
     df_tourney = leaderboard.data
     tourney_status = leaderboard.tourney_status
+    refresh = leaderboard.refresh_string
 
     tourney_data = dt.TournamentInfo()
     tourney_data.pull_tourney_info()
@@ -181,7 +182,8 @@ def tourney_leaderboard():
                            df_tourney=df_tourney,
                            cut_dict=cut_dict,
                            t_info=t_info,
-                           tourney_status=tourney_status)
+                           tourney_status=tourney_status,
+                           refresh=refresh)
 
 @app.route("/game_scoreboard")
 @login_required
@@ -193,6 +195,7 @@ def game_scoreboard():
 
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
     leaderboard.run()
+    refresh = leaderboard.refresh_string
     df_tourney = leaderboard.data
     df_tourney = df_tourney.loc[df_tourney['team_count'] > 0]
 
@@ -212,4 +215,5 @@ def game_scoreboard():
                            df_tourney=df_tourney,
                            t_info=t_info,
                            tourney_status=tourney_status,
-                           team_player_df=team_player_df)
+                           team_player_df=team_player_df,
+                           refresh=refresh)

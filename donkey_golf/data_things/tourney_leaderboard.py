@@ -4,6 +4,7 @@ import logging
 import psycopg2
 
 from sqlalchemy import create_engine
+from datetime import datetime
 
 from donkey_golf import config
 from .base_class import BaseClass
@@ -158,6 +159,7 @@ class LoadLeaderboard(BaseClass):
         self.add_donkey_game_score()
         self.add_player_left_indicator()
         self.add_golfer_team_count()
+        self.data['load_date'] = datetime.today()
 
     def clean_active_cols(self):
         '''
@@ -182,8 +184,6 @@ class LoadLeaderboard(BaseClass):
             self.prepare_active_data()
         elif self.tourney_status == 'pre_tourney':
             self.prepare_pre_tourney_data()
-
-
 
     def load_leaderboard_to_db(self):
         '''
@@ -217,6 +217,7 @@ class PullLeaderboard(BaseClass):
         if kwargs.get('user_id'):
             self.user_id = kwargs.get('user_id')
         else:
+            logger.warning("NEED TO PASS A USER_ID")
             self.user_id = None
 
     def pull_tourney_leaderboard(self):
@@ -265,18 +266,17 @@ class PullLeaderboard(BaseClass):
         '''
         Pulls leaderboard data for everyone on a given users team
         '''
-        logger.info("Pulling users team")
         if self.tourney_status == 'pre_tourney':
             logger.info("Pulling users pre_tourney team")
-            sql = self.yaml_sql_dict.get('users_team_pre_tourney')
-            sql = sql.format(self.user_id, self.conf.tourney_id)
-            self.user_df = run_sql(sql)
+            self.sql_user = self.yaml_sql_dict.get('users_team_pre_tourney')
+            self.sql_user = self.sql_user.format(self.user_id, self.conf.tourney_id)
+            self.user_df = run_sql(self.sql_user)
         else:
             logger.info("Pulling users active tourney team")
-            sql = self.yaml_sql_dict.get('users_team')
+            self.sql_user = self.yaml_sql_dict.get('users_team')
             # Sub in users ID into the SQL
-            sql = sql.format(self.user_id, self.tourney_id)
-            self.user_df = self.run_sql(sql)
+            self.sql_user = self.sql_user.format(self.user_id, self.tourney_id)
+            self.user_df = self.run_sql(self.sql_user)
 
     def determine_current_round(self):
         '''
@@ -334,7 +334,24 @@ class PullLeaderboard(BaseClass):
             logger.info("Dont need to worry about the cut line now")
             return None
 
+    def calc_refresh_date(self):
+        '''
+        Add attributes to determine when the tourney data was refreshed
+        '''
+        logger.info("Determing data refresh times")
+        self.refresh_timedelta = self.data['load_date'].min()
+        self.refresh_minutes = (datetime.today() - self.refresh_timedelta).seconds // 60
+
+        # Create a string to display refresh date
+        if self.refresh_minutes == 0:
+            self.refresh_string = "Refreshed <1 minute ago"
+        elif self.refresh_minutes == 1:
+            self.refresh_string = "Refreshed 1 minute ago"
+        else:
+            self.refresh_string =  f"Refreshed {self.refresh_minutes} minutes ago"
+
     def run(self):
         self.pull_tourney_leaderboard()
+        self.calc_refresh_date()
         self.determine_tourney_status()
         self.pull_users_team()

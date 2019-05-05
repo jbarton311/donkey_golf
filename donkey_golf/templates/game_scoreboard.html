@@ -21,8 +21,16 @@
 </div>
 
 
-<h5 style="text-align:center;"> Game Scoreboard </h5>
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h4>Donkey Scoreboard</h4>
+</div>
 
+<font size="1" face="Arial">
+<div>
+  <div style="text-align: right;"> {{refresh}} </div>
+</div>
+
+</font>
 
 <font size="2" face="Arial">
 <table class="table table-sm jtable">
@@ -78,6 +86,7 @@ under the selected user -->
                     <th>POS</th>
                     <th>PLAYER</th>
                     <th>TO PAR</th>
+                    <th>THRU</th>
                     <th>TEAMS</th>
                     <th>SCORE</th>
                   </tr>
@@ -93,6 +102,7 @@ under the selected user -->
                     </td>
 
                       <td>{{row2['to_par']}}</td>
+                      <td>{{row2['thru']}}</td>
                       <td>{{row2['team_count']}}</td>
                       <td>{{row2['donkey_score']}}</td>
                   </tr>
@@ -118,6 +128,7 @@ under the selected user -->
         <th>POS</th>
         <th>PLAYER</th>
         <th>TO PAR</th>
+        <th>THRU</th>
         <th>TEAMS</th>
         <th>CUT?</th>
       </tr>
@@ -136,6 +147,7 @@ under the selected user -->
         </td>
 
           <td>{{row['to_par']}}</td>
+          <td>{{row['thru']}}</td>
           <td>{{row['team_count']}}</td>
           <td>{{row['missed_cut']}}</td>
       </tr>
