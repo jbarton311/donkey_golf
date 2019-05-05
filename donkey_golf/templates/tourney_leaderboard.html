@@ -53,7 +53,7 @@
     <tbody>
       {% for i, row in df_tourney.iterrows() %}
       {% if row['on_team'] == 'Yes' %}
-        <tr class="slate-gray text-white">
+        <tr class="team-indicator">
       {% elif row['player']=='Tiger Woods' %}
         <tr class="tiger-red text-white">
       {% elif row['pos'].lower().startswith('projected') or row['pos'].lower().startswith('the following') %}

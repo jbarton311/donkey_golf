@@ -38,7 +38,7 @@
       <tr>
         <th>RANK</th>
         <th>PLAYER</th>
-        <th>SCORE</th>
+        <th>D-SCORE</th>
         <th>CUT</th>
         <th>IN PLAY</th>
       </tr>
@@ -47,22 +47,17 @@
 
       {% for i, row in df_sb.iterrows() %}
       {% if row['username'] == current_user.username %}
-        <tr class="slate-gray text-white">
+        <tr class="team-indicator">
       {% else %}
         <tr>
       {% endif %}
           <td>{{row['final_rank']}}</td>
 
             <td>
-          {% if row['username'] == current_user.username %}
-          <a data-toggle="collapse" href="#" data-target="#{{row['username']}}" style="color: white">
-                          {{row['username']}}
-          </a>
-          {% else %}
+
           <a data-toggle="collapse" href="#" data-target="#{{row['username']}}">
                           {{row['username']}}
           </a>
-          {% endif %}
           </td>
 
 
@@ -88,7 +83,7 @@ under the selected user -->
                     <th>TO PAR</th>
                     <th>THRU</th>
                     <th>TEAMS</th>
-                    <th>SCORE</th>
+                    <th>D-SCORE</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -119,7 +114,9 @@ under the selected user -->
 </font>
 
 
-<h5 style="text-align:center;"> Drafted Donks </h5>
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h4>Drafted Donks</h4>
+</div>
 
 <font size="2" face="Arial">
 <table class="table table-sm jtable">
@@ -130,14 +127,14 @@ under the selected user -->
         <th>TO PAR</th>
         <th>THRU</th>
         <th>TEAMS</th>
-        <th>CUT?</th>
+        <th>D-SCORE</th>
       </tr>
     </thead>
     <tbody>
 
       {% for i, row in df_tourney.iterrows() %}
       {% if row['on_team'] == 'Yes' %}
-        <tr class="slate-gray text-white">
+        <tr class="team-indicator">
       {% else %}
         <tr>
       {% endif %}
@@ -149,7 +146,7 @@ under the selected user -->
           <td>{{row['to_par']}}</td>
           <td>{{row['thru']}}</td>
           <td>{{row['team_count']}}</td>
-          <td>{{row['missed_cut']}}</td>
+          <td>{{row['donkey_score']}}</td>
       </tr>
       {% endfor %}
     </tbody>
