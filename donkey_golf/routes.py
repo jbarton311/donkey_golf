@@ -104,8 +104,7 @@ def my_team():
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
     leaderboard.pull_tourney_leaderboard()
     df_team_results = leaderboard.user_df
-
-    #df_team_results = data_utils.users_team(current_user.id)
+    tourney_status = leaderboard.tourney_status
 
     # If they have a team, take them to their team
     if not df_team_results.empty:
@@ -113,48 +112,50 @@ def my_team():
         return render_template('user_team.html', title='My Team',
                                user_id=current_user.id, team=df_team_results)
 
-    draft = dt.DraftDay()
-    draft.run()
-    # Pull a list of available players and rankings
-    lb_df = draft.data
+    # If they dont have a team and the tourney has started, sorry!
+    if tourney_status != 'pre_tourney':
+        return render_template('sorry_tourney_has_started.html')
+    # If it's still pre tourney, let them draft
+    else:
+        draft = dt.DraftDay()
+        draft.run()
+        # Pull a list of available players and rankings
+        lb_df = draft.data
 
-    if request.method == 'POST':
-        team_list = request.form.getlist('team_list')
-        print(f'TEAM LIST: {team_list}')
+        if request.method == 'POST':
+            team_list = request.form.getlist('team_list')
+            print(f'TEAM LIST: {team_list}')
 
-        grouper = lb_df.loc[lb_df['player'].isin(team_list)].groupby(['tier'])['player'].count().reset_index()
-        tier_dict = dict(zip(grouper.tier, grouper.player))
-        tier_1 = tier_dict.get('Tier 1', 0)
-        tier_2 = tier_dict.get('Tier 2', 0)
-        print(tier_dict)
+            grouper = lb_df.loc[lb_df['player'].isin(team_list)].groupby(['tier'])['player'].count().reset_index()
+            tier_dict = dict(zip(grouper.tier, grouper.player))
+            tier_1 = tier_dict.get('Tier 1', 0)
+            tier_2 = tier_dict.get('Tier 2', 0)
+            print(tier_dict)
 
-        # Make sure they pick 3 people from each tier
-        if tier_1 == 3 and tier_2 == 3:
-            print('Clutch')
-            print(conf.tourney_id)
-            print(team_list)
-            try:
-                for golfer in team_list:
-                    entry = Teams(id=current_user.id,
-                                  tourney_id=leaderboard.tourney_id,
-                                  player=golfer)
-                    db.session.add(entry)
-                    db.session.commit()
-                flash('Congrats - you have selected a team!', 'success')
-                logger.warning("Taking them to their user page")
+            # Make sure they pick 3 people from each tier
+            if tier_1 == 3 and tier_2 == 3:
+                try:
+                    for golfer in team_list:
+                        entry = Teams(id=current_user.id,
+                                      tourney_id=leaderboard.tourney_id,
+                                      player=golfer)
+                        db.session.add(entry)
+                        db.session.commit()
+                    flash('Congrats - you have selected a team!', 'success')
+                    logger.warning("Taking them to their user page")
 
-                # Make sure there team displays correctly after they draft
-                leaderboard = dt.PullLeaderboard(user_id=current_user.id)
-                leaderboard.pull_tourney_leaderboard()
-                df_team_results = leaderboard.user_df
-                return render_template('user_team.html', title='My Team',
-                                       user_id=current_user.id, team=df_team_results)
+                    # Make sure there team displays correctly after they draft
+                    leaderboard = dt.PullLeaderboard(user_id=current_user.id)
+                    leaderboard.pull_tourney_leaderboard()
+                    df_team_results = leaderboard.user_df
+                    return render_template('user_team.html', title='My Team',
+                                           user_id=current_user.id, team=df_team_results)
 
-            except Exception as e:
-                flash("Uh Oh - Weird Error", 'danger')
-                flash(f'{e}', 'info')
-        else:
-            flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
+                except Exception as e:
+                    flash("Uh Oh - Weird Error", 'danger')
+                    flash(f'{e}', 'info')
+            else:
+                flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
 
     return render_template('available_players.html', title='Players',
                             df=lb_df)
