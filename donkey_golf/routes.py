@@ -214,7 +214,12 @@ def game_scoreboard():
     team_by_player.run()
     team_player_df = team_by_player.data
 
-    return render_template('game_scoreboard.html',
+    # Determine which route to show based on tourney status
+
+    if tourney_status == 'pre_tourney':
+        return render_template('waiting_for_tourney.html')
+    else:
+        return render_template('game_scoreboard.html',
                            title='Donkey Leaderboard',
                            df_sb=df_sb,
                            df_tourney=df_tourney,
