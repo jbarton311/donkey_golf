@@ -6,7 +6,6 @@ import psycopg2
 from sqlalchemy import create_engine
 from datetime import datetime
 
-from donkey_golf import config
 from .base_class import BaseClass
 
 # create logger
@@ -160,6 +159,7 @@ class LoadLeaderboard(BaseClass):
         self.add_player_left_indicator()
         self.add_golfer_team_count()
         self.data['load_date'] = datetime.today()
+        self.data['donkey_score'] = self.data['donkey_score'].astype(int)
 
     def clean_active_cols(self):
         '''
@@ -217,6 +217,7 @@ class LoadLeaderboard(BaseClass):
         self.clean_data()
 
         self.load_leaderboard_to_db()
+        self.load_tourney_status()
 
 class PullLeaderboard(BaseClass):
 
