@@ -44,5 +44,12 @@ class DraftDay(BaseClass):
 
         self.data = df.copy()
 
+    def clean_data(self):
+        '''
+        Clean up float values coming thru columns
+        '''
+        for col in ['current_rank','events_played','rank']:
+            self.data.loc[self.data[col].notnull(), col] = self.data.loc[self.data[col].notnull(), col].astype(int).astype(str)
     def run(self):
         self.pull_available_players()
+        self.clean_data()

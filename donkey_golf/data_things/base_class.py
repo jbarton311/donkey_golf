@@ -32,6 +32,7 @@ class BaseClass():
         self.yaml_sql_dict = oyaml.load(open(self.conf.yaml_sql_loc), Loader=oyaml.FullLoader)
         self.tourney_id = self.determine_current_tourney_id()
         self.determine_current_url()
+        self.new_determine_status()
 
     def determine_current_url(self):
         '''
@@ -84,3 +85,8 @@ class BaseClass():
         logger.info(f"Current tourney ID: {tourney_id}")
 
         return tourney_id
+
+    def new_determine_status(self):
+        sql = self.yaml_sql_dict.get('pull_tourney_status')
+        df = self.run_sql(sql)
+        self.tourney_status = df['value'][0].strip()

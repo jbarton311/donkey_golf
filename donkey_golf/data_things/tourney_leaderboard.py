@@ -236,13 +236,13 @@ class PullLeaderboard(BaseClass):
 
         self.sql = self.yaml_sql_dict.get('pull_tourney_leaderboard')
         self.data = self.run_sql(self.sql)
-        self.determine_tourney_status()
+
+        self.pull_users_team()
 
         if self.user_id and self.tourney_status in ['in_progress','finished']:
-            self.pull_users_team()
-
             # If the user_df comes back with records, add on_team field
             if not self.user_df.empty:
+                logger.info("OUTER JOIN")
                 self.data = self.data.merge(self.user_df[['player','id']],
                     how='left',
                     on=['player'])
@@ -253,24 +253,6 @@ class PullLeaderboard(BaseClass):
                 self.data = self.data.drop('id', axis=1)
 
         self.data['team_count'] = self.data['team_count'].astype(int)
-
-    def determine_tourney_status(self):
-        '''
-        Look at the leaderboard data and determine current tourney
-        status from that data
-        '''
-        # This indicates we have no data in leaderboard
-        # for the active tourney ID
-        if self.data.empty:
-            self.tourney_status = 'pre_tourney'
-        elif 'fedex_pts' in self.data.columns or 'earnings' in self.data.columns:
-            self.tourney_status = 'finished'
-        elif 'r4' in self.data.columns or 'tot' in self.data.columns:
-            self.tourney_status = 'in_progress'
-        else:
-            self.tourney_status = 'cant_determine'
-
-        logger.info(f"Tourney current status: {self.tourney_status}")
 
     def pull_users_team(self):
         '''
@@ -366,6 +348,5 @@ class PullLeaderboard(BaseClass):
 
     def run(self):
         self.pull_tourney_leaderboard()
-        self.determine_tourney_status()
-        self.pull_users_team()
+        #self.pull_users_team()
         self.calc_refresh_date()

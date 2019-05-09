@@ -107,11 +107,18 @@ def my_team():
     df_team_results = getattr(leaderboard, 'user_df', pd.DataFrame())
     tourney_status = leaderboard.tourney_status
 
+    tourney_data = dt.TournamentInfo()
+    tourney_data.pull_tourney_info()
+    t_info = tourney_data.tourney_data
+
     # If they have a team, take them to their team
     if not df_team_results.empty:
         logger.warning("Taking them to their user page")
-        return render_template('user_team.html', title='My Team',
-                               user_id=current_user.id, team=df_team_results)
+        return render_template('user_team.html',
+                                title='My Team',
+                               user_id=current_user.id,
+                               team=df_team_results,
+                               t_info=t_info)
 
     # If they dont have a team and the tourney has started, sorry!
     if tourney_status != 'pre_tourney':
@@ -149,8 +156,11 @@ def my_team():
                     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
                     leaderboard.pull_tourney_leaderboard()
                     df_team_results = leaderboard.user_df
-                    return render_template('user_team.html', title='My Team',
-                                           user_id=current_user.id, team=df_team_results)
+                    return render_template('user_team.html',
+                                            title='My Team',
+                                           user_id=current_user.id,
+                                           team=df_team_results,
+                                            t_info=t_info)
 
                 except Exception as e:
                     flash("Uh Oh - Weird Error", 'danger')
@@ -158,8 +168,10 @@ def my_team():
             else:
                 flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
 
-    return render_template('available_players.html', title='Players',
-                            df=lb_df)
+    return render_template('available_players.html',
+                            title='Players',
+                            df=lb_df,
+                             t_info=t_info)
 
 @app.route("/how_to_play")
 def how_to_play():
@@ -198,34 +210,34 @@ def game_scoreboard():
 
     scoreboard = dt.GameScoreboard()
     scoreboard.run()
-    df_sb = scoreboard.data
 
-    leaderboard = dt.PullLeaderboard(user_id=current_user.id)
-    leaderboard.run()
-    refresh = leaderboard.refresh_string
-    df_tourney = leaderboard.data
-    df_tourney = df_tourney.loc[df_tourney['team_count'] > 0]
-
-    tourney_status = leaderboard.tourney_status
-
-    tourney_info = dt.TournamentInfo()
-    tourney_info.pull_tourney_info()
-    t_info = tourney_info.tourney_data
-
-    team_by_player = dt.TeamPlayerResults()
-    team_by_player.run()
-    team_player_df = team_by_player.data
-
-    # Determine which route to show based on tourney status
-
-    if tourney_status == 'pre_tourney':
+    if scoreboard.tourney_status == 'pre_tourney':
         return render_template('waiting_for_tourney.html')
     else:
+
+        df_sb = scoreboard.data
+
+        leaderboard = dt.PullLeaderboard(user_id=current_user.id)
+        leaderboard.run()
+        refresh = leaderboard.refresh_string
+        df_tourney = leaderboard.data
+        df_tourney = df_tourney.loc[df_tourney['team_count'] > 0]
+
+        tourney_status = leaderboard.tourney_status
+
+        tourney_info = dt.TournamentInfo()
+        tourney_info.pull_tourney_info()
+        t_info = tourney_info.tourney_data
+
+        team_by_player = dt.TeamPlayerResults()
+        team_by_player.run()
+        team_player_df = team_by_player.data
+
         return render_template('game_scoreboard.html',
-                           title='Donkey Leaderboard',
-                           df_sb=df_sb,
-                           df_tourney=df_tourney,
-                           t_info=t_info,
-                           tourney_status=tourney_status,
-                           team_player_df=team_player_df,
-                           refresh=refresh)
+                               title='Donkey Leaderboard',
+                               df_sb=df_sb,
+                               df_tourney=df_tourney,
+                               t_info=t_info,
+                               tourney_status=tourney_status,
+                               team_player_df=team_player_df,
+                               refresh=refresh)

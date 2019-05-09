@@ -72,6 +72,9 @@ class GameScoreboard(BaseClass):
                                    on='rank')
 
     def run(self):
-        self.aggregate_user_scores()
-        self.determine_ties_in_scoreboard()
-        self.add_ties_to_data()
+        if self.tourney_status != 'pre_tourney':
+            self.aggregate_user_scores()
+            self.determine_ties_in_scoreboard()
+            self.add_ties_to_data()
+        else:
+            logger.info("Not pulling any scoreboard data since its pre_tourney")
