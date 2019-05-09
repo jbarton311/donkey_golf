@@ -207,11 +207,6 @@ def tourney_leaderboard():
 @app.route("/game_scoreboard")
 @login_required
 def game_scoreboard():
-    logger.warning("Have to run leaderboard load here for now")
-
-    lb = dt.LoadLeaderboard()
-    lb.run()
-    
     scoreboard = dt.GameScoreboard()
     scoreboard.run()
 
