@@ -17,6 +17,10 @@ users_team_pre_tourney:
     WHERE id = {0}
     AND tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
 
+load_tourney_status:
+    delete from donkey_variables where metric = 'current_tourney_status';
+    INSERT INTO donkey_variables VALUES ('current_tourney_status', '{}');
+
 pull_tourney_leaderboard:
     select * from leaderboard
     where tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')

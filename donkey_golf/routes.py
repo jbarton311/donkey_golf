@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 
 from flask import render_template, url_for, flash, redirect, request
 from donkey_golf import app, db, bcrypt, config
@@ -103,7 +104,7 @@ def my_team():
     # Pull users team
     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
     leaderboard.pull_tourney_leaderboard()
-    df_team_results = leaderboard.user_df
+    df_team_results = getattr(leaderboard, 'user_df', pd.DataFrame())
     tourney_status = leaderboard.tourney_status
 
     # If they have a team, take them to their team
@@ -172,7 +173,7 @@ def tourney_leaderboard():
     leaderboard.run()
     df_tourney = leaderboard.data
     tourney_status = leaderboard.tourney_status
-    refresh = leaderboard.refresh_string
+    refresh = getattr(leaderboard, 'refresh_string', 'NO REFRESH')
 
     tourney_data = dt.TournamentInfo()
     tourney_data.pull_tourney_info()

@@ -197,6 +197,15 @@ class LoadLeaderboard(BaseClass):
             logger.info("Loading data into the leaderboard table")
             self.load_table_to_db(self.data, 'leaderboard')
 
+    def load_tourney_status(self):
+        '''
+        Load tourney status
+        '''
+
+        self.load_status_sql = self.yaml_sql_dict.get('load_tourney_status')
+        self.load_status_sql = self.load_status_sql.format(self.tourney_status)
+        run_this = self.execute_any_sql(self.load_status_sql)
+
     def run(self):
         # Get the leaderboard data
         self.scrape_espn_leaderboard(self.url_lb)
@@ -250,11 +259,12 @@ class PullLeaderboard(BaseClass):
         Look at the leaderboard data and determine current tourney
         status from that data
         '''
-        if 'tee_time' in self.data.columns:
+        # This indicates we have no data in leaderboard
+        # for the active tourney ID
+        if self.data.empty:
             self.tourney_status = 'pre_tourney'
         elif 'fedex_pts' in self.data.columns or 'earnings' in self.data.columns:
             self.tourney_status = 'finished'
-
         elif 'r4' in self.data.columns or 'tot' in self.data.columns:
             self.tourney_status = 'in_progress'
         else:
@@ -270,7 +280,7 @@ class PullLeaderboard(BaseClass):
             logger.info("Pulling users pre_tourney team")
             self.sql_user = self.yaml_sql_dict.get('users_team_pre_tourney')
             self.sql_user = self.sql_user.format(self.user_id, self.conf.tourney_id)
-            self.user_df = run_sql(self.sql_user)
+            self.user_df = self.run_sql(self.sql_user)
         else:
             logger.info("Pulling users active tourney team")
             self.sql_user = self.yaml_sql_dict.get('users_team')
@@ -339,19 +349,23 @@ class PullLeaderboard(BaseClass):
         Add attributes to determine when the tourney data was refreshed
         '''
         logger.info("Determing data refresh times")
-        self.refresh_timedelta = self.data['load_date'].min()
-        self.refresh_minutes = (datetime.today() - self.refresh_timedelta).seconds // 60
 
-        # Create a string to display refresh date
-        if self.refresh_minutes == 0:
-            self.refresh_string = "Refreshed <1 minute ago"
-        elif self.refresh_minutes == 1:
-            self.refresh_string = "Refreshed 1 minute ago"
+        if self.tourney_status == 'pre_tourney':
+            logger.info("Tourney hasnt started yet - no relevant data in database ")
         else:
-            self.refresh_string =  f"Refreshed {self.refresh_minutes} minutes ago"
+            self.refresh_timedelta = self.data['load_date'].min()
+            self.refresh_minutes = (datetime.today() - self.refresh_timedelta).seconds // 60
+
+            # Create a string to display refresh date
+            if self.refresh_minutes == 0:
+                self.refresh_string = "Refreshed <1 minute ago"
+            elif self.refresh_minutes == 1:
+                self.refresh_string = "Refreshed 1 minute ago"
+            else:
+                self.refresh_string =  f"Refreshed {self.refresh_minutes} minutes ago"
 
     def run(self):
         self.pull_tourney_leaderboard()
-        self.calc_refresh_date()
         self.determine_tourney_status()
         self.pull_users_team()
+        self.calc_refresh_date()

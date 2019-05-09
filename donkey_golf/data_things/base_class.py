@@ -42,6 +42,7 @@ class BaseClass():
     def run_sql(self, sql):
         '''
         Takes a SQL and connects to database to execute passed SQL
+        ONLY for pulling SQL
         '''
         logger.info("Executing run_sql")
         #engine = create_engine(self.conf.db_url)
@@ -52,6 +53,15 @@ class BaseClass():
         conn.close()
 
         return df
+
+    def execute_any_sql(self, sql):
+        '''
+        Should execute SQL commands
+        '''
+        with psycopg2.connect(self.conf.db_url) as conn:
+            cur = conn.cursor()
+            cur.execute(sql)
+        conn.close()
 
     def load_table_to_db(self, df, tablename):
         '''
