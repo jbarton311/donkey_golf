@@ -39,11 +39,12 @@
   <thead>
     <tr>
       <th style="width: 5%">POS</th>
-      <th style="width: 30%">PLAYER</th>
-      <th style="width: 15%">TO PAR</th>
-      <th style="width: 10%">THRU</th>
-      <th style="width: 10%">TODAY</th>
-
+      <th>PLAYER</th>
+      <th>TO PAR</th>
+      <th>THRU</th>
+      <th>TODAY</th>
+      <th>TEAMS</th>
+      <th>D-SCORE</th>
     </tr>
   </thead>
     <tbody>
@@ -55,7 +56,9 @@
           <td>{{ row['player'] }}</td>
           <td>{{ row['to_par'] }}</td>
           <td>{{ row['thru'] }}</td>
-          <td>{{ row['r1'] }}</td>
+          <td>{{ row['today'] }}</td>
+          <td>{{ row['team_count'] }}</td>
+          <td>{{ row['donkey_score'] }}</td>
       </tr>
       {% endfor %}
     </tbody>
