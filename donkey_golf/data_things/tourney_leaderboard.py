@@ -290,6 +290,7 @@ class PullLeaderboard(BaseClass):
             for round_num in rounds:
                 if df.loc[df[round_num] == '--'].shape[0] > 1:
                     current_round = round_num
+                    return current_round
         logger.info(f"Determined the current round to be {current_round}")
 
         return current_round

@@ -43,8 +43,8 @@ aggregate_team_score:
 
 calculate_cut_line:
     SELECT pos from public.leaderboard
-    WHERE (pos LIKE ('%projected%')
-      OR pos LIKE ('%failed to%'))
+    WHERE (LOWER(pos) LIKE ('%projected%')
+      OR LOWER(pos) LIKE ('%failed to%'))
     AND tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
     LIMIT 1
 

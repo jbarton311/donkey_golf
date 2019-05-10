@@ -231,6 +231,11 @@ def game_scoreboard():
         df_tourney = leaderboard.data
         df_tourney = df_tourney.loc[df_tourney['team_count'] > 0]
 
+        try:
+            cut_dict = leaderboard.calculate_cut_line()
+        except Exception as e:
+            cut_dict = None
+
         tourney_status = leaderboard.tourney_status
 
         tourney_info = dt.TournamentInfo()
@@ -248,4 +253,5 @@ def game_scoreboard():
                                t_info=t_info,
                                tourney_status=tourney_status,
                                team_player_df=team_player_df,
+                               cut_dict=cut_dict,
                                refresh=refresh)

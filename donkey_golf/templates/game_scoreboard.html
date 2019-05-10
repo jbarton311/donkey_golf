@@ -29,7 +29,10 @@
 <div>
   <div style="text-align: right;"> {{refresh}} </div>
 </div>
-
+{% if cut_dict%}
+  <br>
+  <span>Projected Cut: {{cut_dict['cut_str']}}</span>
+{% endif %}
 </font>
 
 <font size="2" face="Arial">
