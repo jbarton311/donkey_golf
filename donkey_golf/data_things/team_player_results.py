@@ -39,6 +39,7 @@ class TeamPlayerResults(BaseClass):
         self.data = df.copy()
 
     def clean_data(self):
+        self.data = self.data.loc[self.data['donkey_score'].notnull()]
         self.data['donkey_score'] = self.data['donkey_score'].astype(int)
         self.data = self.data.sort_values('donkey_score', ascending=True)
 
