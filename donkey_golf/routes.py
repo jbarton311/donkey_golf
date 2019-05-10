@@ -95,7 +95,12 @@ def logout():
 @app.route("/account")
 @login_required
 def account():
-    return render_template('account.html', title='Account')
+    user_data = dt.UserData(user_id=current_user.id)
+    user_data.run()
+    user_df = user_data.data
+    return render_template('account.html',
+                            title='Account',
+                            user_df=user_df)
 
 @app.route("/my_team", methods=['GET', 'POST'])
 @login_required
@@ -111,12 +116,16 @@ def my_team():
     tourney_data.pull_tourney_info()
     t_info = tourney_data.tourney_data
 
+    user_data = dt.UserData(user_id=current_user.id)
+    user_data.run()
+    user_df = user_data.data
     # If they have a team, take them to their team
     if not df_team_results.empty:
         logger.warning("Taking them to their user page")
         return render_template('user_team.html',
                                 title='My Team',
                                user_id=current_user.id,
+                               user_df=user_df,
                                team=df_team_results,
                                t_info=t_info)
 

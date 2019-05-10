@@ -1,4 +1,25 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Username: {{ current_user.username }}</h1>
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h4>Account Details</h4>
+</div>
+
+<div class="page-header" style="text-align:center; padding-top:10px; padding-bottom:20px">
+  Not really sure why you are looking at this, but here you go!
+  </div>
+
+  <div>
+    {% for i, row in user_df.iterrows() %}
+    <h4>
+        Username: {{row['username']}}
+    </h4>
+    <h4>
+        Email: {{row['email']}}
+    </h4>
+    <h4>
+        Password: UncrAckAble?
+    </h4>
+
+    {% endfor %}
+  </div>
 {% endblock content %}

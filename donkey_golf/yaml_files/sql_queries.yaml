@@ -66,3 +66,7 @@ scoreboard_users_team:
     left join public.user b on a.id=b.id
     left join leaderboard c on a.player=c.player
     WHERE a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');
+
+user_info:
+    select id, username, email, image_file from "user"
+    where id = {}
