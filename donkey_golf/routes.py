@@ -147,10 +147,11 @@ def my_team():
             tier_dict = dict(zip(grouper.tier, grouper.player))
             tier_1 = tier_dict.get('Tier 1', 0)
             tier_2 = tier_dict.get('Tier 2', 0)
+            tier_3 = tier_dict.get('Tier 3', 0)
             print(tier_dict)
 
             # Make sure they pick 3 people from each tier
-            if tier_1 == 3 and tier_2 == 3:
+            if tier_1 == 2 and tier_2 == 3 and tier_3 == 2:
                 try:
                     for golfer in team_list:
                         entry = Teams(id=current_user.id,
@@ -181,7 +182,7 @@ def my_team():
                     flash("Uh Oh - Weird Error", 'danger')
                     flash(f'{e}', 'info')
             else:
-                flash('Pick exactly 3 from each tier, DUMMY!', 'danger')
+                flash('Pick the following:\n Tier A: 2\n Tier B: 3\n Tier C: 2, DUMMY!', 'danger')
 
     return render_template('available_players.html',
                             title='Players',

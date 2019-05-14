@@ -39,8 +39,12 @@ class DraftDay(BaseClass):
         df = self.run_sql(self.sql)
 
         df['rank'] = df['current_rank'].rank(ascending=True, method='min')
-        df['tier'] = 'Tier 2'
-        df.loc[df['rank'] <= 12, 'tier'] = 'Tier 1'
+
+        df['rank'] = df['rank'].fillna(999)
+        df['rank'] = df['rank'].astype(int)
+        df['tier'] = 'Tier 3'
+        df.loc[df['rank'] <= 8, 'tier'] = 'Tier 1'
+        df.loc[(df['rank'] >= 9) & (df['rank'] <= 20), 'tier'] = 'Tier 2'        
 
         self.data = df.copy()
 
