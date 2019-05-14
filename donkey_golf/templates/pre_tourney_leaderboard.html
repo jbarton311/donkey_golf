@@ -26,51 +26,27 @@
     <h4>Tourney Leaderboard</h4>
   </div>
 
-  <font size="1" face="Arial">
-  <div>
-    <div style="text-align: right;"> {{refresh}} </div>
-  </div>
-  {% if cut_dict%}
-    <br>
-    <span>Projected Cut: {{cut_dict['cut_str']}}</span>
-  {% endif %}
-</font>
 
 
 <font size="2" face="Arial">
 <table class="table table-sm jtable">
     <thead>
       <tr>
-        <th style="width: 5%">POS</th>
+
         <th style="width: 30%">PLAYER</th>
-        <th style="width: 15%">TO PAR</th>
-        <th style="width: 10%">THRU</th>
-        <th style="width: 10%">TODAY</th>
+        <th style="width: 15%">TEE TIME</th>
+        <th style="width: 10%">WORLD RANK</th>
 
       </tr>
     </thead>
     <tbody>
       {% for i, row in df_tourney.iterrows() %}
-      {% if row['on_team'] == 'Yes' %}
-        <tr class="team-indicator">
-      {% elif row['player']=='Tiger Woods' %}
-        <tr class="tiger-red text-white">
-      {% elif row['pos'].lower().startswith('projected') or row['pos'].lower().startswith('the following') %}
-        <tr class="cut_color text-white">
-      {% else %}
         <tr>
-      {% endif %}
-
-      {% if row['pos'].lower().startswith('projected') or row['pos'].lower().startswith('the following') %}
-        <td colspan="5">{{ row['pos'] }}</td>
-      {% else %}
-        <td>{{ row['pos'] }}</td>
         <td>{{ row['player'] }}</td>
-        <td>{{ row['to_par'] }}</td>
-        <td>{{ row['thru'] }}</td>
-        <td>{{ row['today'] }}</td>
+        <td>{{ row['tee_time'] }}</td>
+        <td>{{ row['current_rank'] }}</td>
+
       </tr>
-      {% endif %}
 
       {% endfor %}
 

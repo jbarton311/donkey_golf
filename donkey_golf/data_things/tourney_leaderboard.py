@@ -230,6 +230,18 @@ class PullLeaderboard(BaseClass):
             logger.warning("NEED TO PASS A USER_ID")
             self.user_id = None
 
+    def pull_pre_tourney_data(self):
+        '''
+        Pulls pre_tourney data for the tourney
+        '''
+
+        self.sql_pre_tourney = self.yaml_sql_dict.get('pull_available_players')
+        self.df_pre_tourney = self.run_sql(self.sql_pre_tourney)
+
+        # Fix some current_rank formatting
+        self.df_pre_tourney['current_rank'] = self.df_pre_tourney['current_rank'].fillna(9999).astype(int).astype(str)
+        self.df_pre_tourney['current_rank'] = self.df_pre_tourney['current_rank'].replace('9999', '-')
+
     def pull_tourney_leaderboard(self):
         '''
         Pulls leaderboard data for the tourney
@@ -350,5 +362,5 @@ class PullLeaderboard(BaseClass):
 
     def run(self):
         self.pull_tourney_leaderboard()
-        #self.pull_users_team()        
+        #self.pull_users_team()
         self.calc_refresh_date()

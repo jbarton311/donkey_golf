@@ -201,27 +201,33 @@ def tourney_leaderboard():
     df_tourney = leaderboard.data
     tourney_status = leaderboard.tourney_status
 
-    if tourney_status == 'pre_toruney':
-        return render_template('sorry_tourney_has_started.html')
-
-    refresh = getattr(leaderboard, 'refresh_string', 'NO REFRESH')
-
     tourney_data = dt.TournamentInfo()
     tourney_data.pull_tourney_info()
     t_info = tourney_data.tourney_data
 
-    try:
-        cut_dict = leaderboard.calculate_cut_line()
-    except Exception as e:
-        cut_dict = None
+    if tourney_status == 'pre_tourney':
+        logger.info("We in pre tourney")
+        leaderboard.pull_pre_tourney_data()
 
-    return render_template('tourney_leaderboard.html',
-                           title='Tourney Leaderboard',
-                           df_tourney=df_tourney,
-                           cut_dict=cut_dict,
-                           t_info=t_info,
-                           tourney_status=tourney_status,
-                           refresh=refresh)
+        return render_template('pre_tourney_leaderboard.html',
+                               title='Tourney Leaderboard',
+                               df_tourney=leaderboard.df_pre_tourney,
+                               t_info=t_info)
+    else:
+        refresh = getattr(leaderboard, 'refresh_string', 'NO REFRESH')
+
+        try:
+            cut_dict = leaderboard.calculate_cut_line()
+        except Exception as e:
+            cut_dict = None
+
+        return render_template('tourney_leaderboard.html',
+                               title='Tourney Leaderboard',
+                               df_tourney=df_tourney,
+                               cut_dict=cut_dict,
+                               t_info=t_info,
+                               tourney_status=tourney_status,
+                               refresh=refresh)
 
 @app.route("/game_scoreboard")
 @login_required

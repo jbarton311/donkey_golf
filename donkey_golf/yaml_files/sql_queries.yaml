@@ -1,5 +1,5 @@
 pull_available_players:
-    SELECT a.player, b.current_rank, b.events_played
+    SELECT a.player, a.tee_time, b.current_rank, b.events_played
     from public.pre_tourney a
     left join public.rankings b
       ON a.player=b.player

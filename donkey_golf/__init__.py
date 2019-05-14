@@ -14,5 +14,4 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-#from donkey_golf import routes, data_utils, config
-from donkey_golf import routes, data_utils, data_things
+from donkey_golf import routes, data_things
