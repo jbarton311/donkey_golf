@@ -165,11 +165,17 @@ def my_team():
                     leaderboard = dt.PullLeaderboard(user_id=current_user.id)
                     leaderboard.pull_tourney_leaderboard()
                     df_team_results = leaderboard.user_df
+
+                    user_data = dt.UserData(user_id=current_user.id)
+                    user_data.run()
+                    user_df = user_data.data
+
                     return render_template('user_team.html',
                                             title='My Team',
                                            user_id=current_user.id,
+                                           user_df=user_df,
                                            team=df_team_results,
-                                            t_info=t_info)
+                                           t_info=t_info)
 
                 except Exception as e:
                     flash("Uh Oh - Weird Error", 'danger')
@@ -194,6 +200,10 @@ def tourney_leaderboard():
     leaderboard.run()
     df_tourney = leaderboard.data
     tourney_status = leaderboard.tourney_status
+
+    if tourney_status == 'pre_toruney':
+        return render_template('sorry_tourney_has_started.html')
+
     refresh = getattr(leaderboard, 'refresh_string', 'NO REFRESH')
 
     tourney_data = dt.TournamentInfo()
