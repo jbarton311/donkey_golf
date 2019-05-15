@@ -29,7 +29,7 @@ pull_tourney_leaderboard:
     where tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
 
 aggregate_team_score:
-    SELECT a.id, c.username,
+    SELECT a.id, c.username, PAY.pay_flag,
     sum(CAST(b.donkey_score as INT)) as donkey_score,
     sum(CAST(b.missed_cut as INT)) as missed_cut,
     sum(CAST(b.player_left as INT)) as player_left
@@ -38,8 +38,10 @@ aggregate_team_score:
         ON a.player=b.player
         left join public.user c
         ON a.id=c.id
+        left join public.donkey_pay PAY
+        ON a.id=PAY.user_id
     WHERE a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
-    GROUP BY 1,2
+    GROUP BY 1,2,3
 
 calculate_cut_line:
     SELECT pos from public.leaderboard
