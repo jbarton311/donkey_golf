@@ -72,3 +72,12 @@ scoreboard_users_team:
 user_info:
     select id, username, email, image_file from "user"
     where id = {}
+
+locked_in_teams:
+    SELECT distinct a.id, c.username, PAY.pay_flag
+      from public.teams a
+          left join public.user c
+          ON a.id=c.id
+          left join public.donkey_pay PAY
+          ON a.id=PAY.user_id
+      WHERE a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')

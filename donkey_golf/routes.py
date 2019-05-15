@@ -236,8 +236,14 @@ def game_scoreboard():
     scoreboard = dt.GameScoreboard()
     scoreboard.run()
 
+    tourney_info = dt.TournamentInfo()
+    tourney_info.pull_tourney_info()
+    t_info = tourney_info.tourney_data
+
     if scoreboard.tourney_status == 'pre_tourney':
-        return render_template('waiting_for_tourney.html')
+        return render_template('waiting_for_tourney.html',
+                                df=scoreboard.df_drafted_teams,
+                                t_info=t_info)
     else:
 
         df_sb = scoreboard.data
@@ -255,9 +261,7 @@ def game_scoreboard():
 
         tourney_status = leaderboard.tourney_status
 
-        tourney_info = dt.TournamentInfo()
-        tourney_info.pull_tourney_info()
-        t_info = tourney_info.tourney_data
+
 
         team_by_player = dt.TeamPlayerResults()
         team_by_player.run()

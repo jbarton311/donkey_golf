@@ -1,10 +1,56 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+<h4 style="text-align:center">{{t_info['tourney_name'][0]}}</h4>
+ <h6 style="text-align:center; padding-bottom:5px;">{{t_info['course_name'][0]}}</h6>
+
+<div class="container" style="text-align:center;">
+ <a href="#" style="text-align:center" data-toggle="collapse" data-target="#demo">Tourney Details <span class="glyphicon glyphicon-arrow-down"></span></a>
+
+ <div id="demo" class="collapse in">
+   <font size="2" face="Arial">
+     <div>
+         <span>{{t_info['tourney_dates'][0]}}</span><br>
+         <span>Purse: {{t_info['tourney_purse'][0]}}</span><br>
+         <span>Defending Champ: {{t_info['tourney_defending_champ'][0]}}</span><br>
+
+     </div>
+   </font>
+ </div>
+</div>
+
+
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h4>Donkey Scoreboard</h4>
+</div>
+
+
 <!-- The table class adds nice spacing and the other classes add additional style -->
 <div class="container">
+<div>
+  <font size="2" face="Arial">
+  <table class="table table-sm jtable">
+      <thead>
+        <tr>
+          <th style="width: 10%">TEAM</th>
+          <th style="width: 10%">PAY?</th>
 
-  <p> Wait for the tourney to start....</p>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i, row in df.iterrows() %}
 
+        <tr>
+          <td>{{ row['username'] }}</td>
+          <td>{{ row['pay_flag'] }}</td>
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </font>
+  </div>
 </div>
 {% endblock content %}

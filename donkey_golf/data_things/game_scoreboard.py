@@ -71,6 +71,14 @@ class GameScoreboard(BaseClass):
                                    how='left',
                                    on='rank')
 
+    def pre_tourney_drafted_teams(self):
+        '''
+        Pull a list of teams that have drafted pre-tourney
+        '''
+        logger.info("Pulling pre tourney draft info")
+        self.sql_pre_tourney = self.yaml_sql_dict.get('locked_in_teams')
+        self.df_drafted_teams = self.run_sql(self.sql_pre_tourney)
+
     def run(self):
         if self.tourney_status != 'pre_tourney':
             self.aggregate_user_scores()
@@ -78,3 +86,4 @@ class GameScoreboard(BaseClass):
             self.add_ties_to_data()
         else:
             logger.info("Not pulling any scoreboard data since its pre_tourney")
+            self.pre_tourney_drafted_teams()
