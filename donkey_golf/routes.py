@@ -241,7 +241,7 @@ def game_scoreboard():
     t_info = tourney_info.tourney_data
 
     if scoreboard.tourney_status == 'pre_tourney':
-        return render_template('waiting_for_tourney.html',
+        return render_template('pre_tourney_scoreboard.html',
                                 df=scoreboard.df_drafted_teams,
                                 t_info=t_info)
     else:
