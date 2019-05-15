@@ -13,7 +13,6 @@
    <font size="2" face="Arial">
      <div>
          <span>{{t_info['tourney_dates'][0]}}</span><br>
-         <span>Current Status: {{tourney_status}}</span><br>
          <span>Purse: {{t_info['tourney_purse'][0]}}</span><br>
          <span>Defending Champ: {{t_info['tourney_defending_champ'][0]}}</span><br>
 
@@ -22,8 +21,11 @@
  </div>
 </div>
 
+
 <div class="container">
+<div style="padding-top: 10px;">
 <h5 style="text-align:center"> Draft Your Team </h5>
+</div>
 <!-- Button trigger modal -->
 <div style="padding-top: 10px; padding-bottom: 10px; text-align: center;">
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
@@ -140,7 +142,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Select the following amount of players from each tier. 
+        Select the following amount of players from each tier.
         </div>
         <div class="modal-body">
            <p>Tier A: 2 </p>
