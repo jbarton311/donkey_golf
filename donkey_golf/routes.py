@@ -130,7 +130,7 @@ def my_team():
                                t_info=t_info)
 
     # If they dont have a team and the tourney has started, sorry!
-    if tourney_status == 'pre_tourneyDELETE THIS':
+    if tourney_status != 'pre_tourney':
         return render_template('sorry_tourney_has_started.html')
     # If it's still pre tourney, let them draft
     else:
