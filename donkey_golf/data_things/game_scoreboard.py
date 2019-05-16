@@ -79,11 +79,16 @@ class GameScoreboard(BaseClass):
         self.sql_pre_tourney = self.yaml_sql_dict.get('locked_in_teams')
         self.df_drafted_teams = self.run_sql(self.sql_pre_tourney)
 
+    def clean_data(self):
+        self.data.loc[self.data['pay_flag'].notnull(), 'pay_flag'] = 'Y'
+        self.data.loc[self.data['pay_flag'].isnull(), 'pay_flag'] = '-'
+
     def run(self):
         if self.tourney_status != 'pre_tourney':
             self.aggregate_user_scores()
             self.determine_ties_in_scoreboard()
             self.add_ties_to_data()
+            self.clean_data()
         else:
             logger.info("Not pulling any scoreboard data since its pre_tourney")
             self.pre_tourney_drafted_teams()

@@ -124,6 +124,7 @@ class LoadLeaderboard(BaseClass):
         self.data.loc[(self.data['missed_cut'] == 0) &
               (self.data['r4'] != '--' ),
               'player_left'] = 0
+        self.data.loc[self.data['today'] == '-', 'player_left'] = 0
 
     def add_golfer_team_count(self):
         '''
