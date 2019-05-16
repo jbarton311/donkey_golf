@@ -83,6 +83,11 @@ class GameScoreboard(BaseClass):
         self.data.loc[self.data['pay_flag'].notnull(), 'pay_flag'] = 'Y'
         self.data.loc[self.data['pay_flag'].isnull(), 'pay_flag'] = '-'
 
+        # Get a prettier donkey_score
+        self.data['donkey_score'] = self.data['donkey_score'].astype(int)
+        self.data.loc[self.data['donkey_score'] > 0, 'donkey_score'] = "+" + self.data['donkey_score'].astype(str)
+        self.data.loc[self.data['donkey_score'] == 0, 'donkey_score'] = 'E'
+
     def run(self):
         if self.tourney_status != 'pre_tourney':
             self.aggregate_user_scores()
