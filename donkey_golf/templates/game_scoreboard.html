@@ -178,7 +178,7 @@ under the selected user -->
                     <tbody>
                       <!-- We are already looping thru the main dataframe, so we need to
                         use row2 so we have access to both dataframes while we loop -->
-                      {% for i3, row3 in team_player_df.loc[team_player_df['player'] == row['player']].iterrows() %}
+                      {% for i3, row3 in team_player_df.loc[team_player_df['player'] == row['player']].sort_values('rank').iterrows() %}
                         <tr>
 
                           <td>{{row3['final_rank']}}</td>

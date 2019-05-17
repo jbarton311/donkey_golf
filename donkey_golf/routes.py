@@ -271,7 +271,7 @@ def game_scoreboard():
         team_player_df = team_player_df.merge(df_sb, how='left', on='id',
               suffixes=('_team','_gs'))
 
-        team_player_df.sort_values('rank', inplace=True)              
+        #team_player_df.sort_values('rank', inplace=True)              
 
         return render_template('game_scoreboard.html',
                                title='Donkey Leaderboard',
