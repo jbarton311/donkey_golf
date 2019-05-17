@@ -105,7 +105,7 @@ under the selected user -->
                       <td>{{row2['today']}}</td>
                       <td>{{row2['thru']}}</td>
                       <td>{{row2['team_count']}}</td>
-                      <td>{{row2['donkey_score']}}</td>
+                      <td>{{row2['donkey_score_team']}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
@@ -147,7 +147,9 @@ under the selected user -->
       {% endif %}
           <td>{{row['pos']}}</td>
           <td>
-            {{row['player']}}
+            <a data-toggle="collapse" href="#" data-target="#{{row['player']}}">
+                            {{row['player']}}
+            </a>
         </td>
 
           <td>{{row['to_par']}}</td>
@@ -155,7 +157,47 @@ under the selected user -->
           <td>{{row['thru']}}</td>
           <td>{{row['team_count']}}</td>
           <td>{{row['donkey_score']}}</td>
-      </tr>
+
+
+          </tr>
+          <tr id="{{row['player']}}" class="collapse out">
+            <td colspan=5>
+              <font size="1" face="Arial">
+                <font size="1" face="Arial">
+                <table class="table table-sm tinytable1 table-striped">
+                    <thead>
+                      <tr>
+                        <th>POS</th>
+                        <th>TEAM</th>
+                        <th>D-SCORE</th>
+                        <th>CUT</th>
+                        <th>ON COURSE</th>
+                        <th>$$</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- We are already looping thru the main dataframe, so we need to
+                        use row2 so we have access to both dataframes while we loop -->
+                      {% for i3, row3 in team_player_df.loc[team_player_df['player'] == row['player']].iterrows() %}
+                        <tr>
+
+                          <td>{{row3['final_rank']}}</td>
+                          <td>{{row3['username_team']}}</td>
+                          <td>{{row3['donkey_score_gs']}}</td>
+                          <td>{{row3['missed_cut_gs']}}</td>
+                          <td>{{row3['player_left_gs']}}</td>
+                          <td>{{row3['pay_flag']}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </font>
+              </font>
+          </td>
+          </tr>
+
+
+
       {% endfor %}
     </tbody>
   </table>
