@@ -193,6 +193,33 @@ def my_team():
 def how_to_play():
     return render_template('how_to_play.html', title='How To Play')
 
+
+@app.route("/side_action")
+def side_action():
+
+    beno = dt.SideAction()
+    beno.run()
+
+    bet1 = beno.bet1
+    bet2 = beno.bet2
+    bet3 = beno.bet3
+    bet4 = beno.bet4
+
+    bet_results = beno.result
+
+    tourney_data = dt.TournamentInfo()
+    tourney_data.pull_tourney_info()
+    t_info = tourney_data.tourney_data
+
+    return render_template('side_action.html',
+                            title='Ben O Loses Money',
+                            bet1=bet1,
+                            bet2=bet2,
+                            bet3=bet3,
+                            bet4=bet4,
+                            bet_results=bet_results,
+                            t_info=t_info)
+
 @app.route("/tourney_leaderboard")
 @login_required
 def tourney_leaderboard():
@@ -271,7 +298,7 @@ def game_scoreboard():
         team_player_df = team_player_df.merge(df_sb, how='left', on='id',
               suffixes=('_team','_gs'))
 
-        #team_player_df.sort_values('rank', inplace=True)              
+        #team_player_df.sort_values('rank', inplace=True)
 
         return render_template('game_scoreboard.html',
                                title='Donkey Leaderboard',

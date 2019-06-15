@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container">
+  <div class="container" style="text-align:center;">
+
+    <h4 style="text-align:center">{{t_info['tourney_name'][0]}}</h4>
+     <h6 style="text-align:center; padding-bottom:5px;">{{t_info['course_name'][0]}}</h6>
+
+    <div class="container" style="text-align:center;">
+     <a href="#" style="text-align:center" data-toggle="collapse" data-target="#demo">Tourney Details <span class="glyphicon glyphicon-arrow-down"></span></a>
+
+     <div id="demo" class="collapse in">
+       <font size="2" face="Arial">
+         <div>
+             <span>{{t_info['tourney_dates'][0]}}</span><br>
+             <span>Purse: {{t_info['tourney_purse'][0]}}</span><br>
+             <span>Defending Champ: {{t_info['tourney_defending_champ'][0]}}</span><br>
+
+         </div>
+       </font>
+     </div>
+    </div>
+
+ <div class="page-header" style="text-align:center; padding-top:10px;">
+   <h4>
+     Some Sweet Side Action </h4>
+ </div>
+
+</div>
+
+<h5>
+  King of the Donks: {{bet_results['King of the Donks']}}
+</h5>
+
+<h5>
+  Ben O: {{bet_results['Ben O']}}
+</h5>
+
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h5>
+    Bet 1 - USA vs. Other </h5>
+</div>
+
+</div>
+<font size="2" face="Arial">
+<table class="table table-hover table-sm jtable">
+  <thead>
+    <tr>
+      <th style="width: 5%">POS</th>
+      <th>PLAYER</th>
+      <th>TO PAR</th>
+      <th>THRU</th>
+      <th>TODAY</th>
+      <th>BETTOR</th>
+    </tr>
+  </thead>
+    <tbody>
+
+      {% for i, row in bet1.iterrows() %}
+
+        <tr>
+          <td>{{ row['pos'] }}</td>
+          <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+            {{ row['player'] }}
+          </td>
+          <td>{{ row['to_par'] }}</td>
+          <td>{{ row['thru'] }}</td>
+          <td>{{ row['today'] }}</td>
+          <td>{{ row['bet'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h5>
+     Bet 2 - Koepka vs. DJ </h5>
+</div>
+
+
+
+<font size="2" face="Arial">
+<table class="table table-hover table-sm jtable">
+  <thead>
+    <tr>
+      <th style="width: 5%">POS</th>
+      <th>PLAYER</th>
+      <th>TO PAR</th>
+      <th>THRU</th>
+      <th>TODAY</th>
+      <th>BETTOR</th>
+    </tr>
+  </thead>
+    <tbody>
+
+      {% for i, row in bet2.iterrows() %}
+
+        <tr>
+          <td>{{ row['pos'] }}</td>
+          <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+            {{ row['player'] }}
+          </td>
+          <td>{{ row['to_par'] }}</td>
+          <td>{{ row['thru'] }}</td>
+          <td>{{ row['today'] }}</td>
+          <td>{{ row['bet'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h5>
+     Bet 3 - Fitzpatrick vs. Tier 3 of King of the Donks Choice </h5>
+</div>
+
+<font size="2" face="Arial">
+<table class="table table-hover table-sm jtable">
+  <thead>
+    <tr>
+      <th style="width: 5%">POS</th>
+      <th>PLAYER</th>
+      <th>TO PAR</th>
+      <th>THRU</th>
+      <th>TODAY</th>
+      <th>BETTOR</th>
+    </tr>
+  </thead>
+    <tbody>
+
+      {% for i, row in bet3.iterrows() %}
+
+        <tr>
+          <td>{{ row['pos'] }}</td>
+          <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+            {{ row['player'] }}
+          </td>
+          <td>{{ row['to_par'] }}</td>
+          <td>{{ row['thru'] }}</td>
+          <td>{{ row['today'] }}</td>
+          <td>{{ row['bet'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h5>
+     Bet 4 - Rory vs. Spieth  </h5>
+</div>
+
+<font size="2" face="Arial">
+<table class="table table-hover table-sm jtable">
+  <thead>
+    <tr>
+      <th style="width: 5%">POS</th>
+      <th>PLAYER</th>
+      <th>TO PAR</th>
+      <th>THRU</th>
+      <th>TODAY</th>
+      <th>BETTOR</th>
+    </tr>
+  </thead>
+    <tbody>
+
+      {% for i, row in bet4.iterrows() %}
+
+        <tr>
+          <td>{{ row['pos'] }}</td>
+          <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+            {{ row['player'] }}
+          </td>
+          <td>{{ row['to_par'] }}</td>
+          <td>{{ row['thru'] }}</td>
+          <td>{{ row['today'] }}</td>
+          <td>{{ row['bet'] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
+<div class="page-header" style="text-align:center; padding-top:10px;">
+  <h5>
+     Bet 5 - Winner Will Be Previous Major Winner vs. 1st Time Guy</h5>
+
+    <p> Can't calculate this automatically right now </p>
+</div>
+
+<font size="2" face="Arial">
+<table class="table table-hover table-sm jtable">
+  <thead>
+    <tr>
+      <th style="width: 5%">POS</th>
+      <th>PLAYER</th>
+      <th>TO PAR</th>
+      <th>THRU</th>
+      <th>TODAY</th>
+      <th>BETTOR</th>
+    </tr>
+  </thead>
+    <tbody>
+
+      {% for i, row in bet1.iterrows() %}
+
+        <tr>
+          <td>{{ row['pos'] }}</td>
+          <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+            {{ row['player'] }}
+          </td>
+          <td>{{ row['to_par'] }}</td>
+          <td>{{ row['thru'] }}</td>
+          <td>{{ row['today'] }}</td>
+          <td> Don't Know </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</font>
+
+</div>
+
+
+{% endblock content %}
