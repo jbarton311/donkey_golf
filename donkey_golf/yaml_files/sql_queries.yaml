@@ -10,7 +10,7 @@ users_team:
     INNER JOIN leaderboard b
         ON a.player = b.player
     LEFT JOIN player_info c on a.player = c.player_name
-    WHERE a.id = 28
+    WHERE a.id = {0}
     AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');
 
 users_team_pre_tourney:
