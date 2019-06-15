@@ -98,6 +98,7 @@ under the selected user -->
                     <tr>
                       <td>{{row2['pos']}}</td>
                       <td>
+                        <img src="{{row2['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
                         {{row2['player']}}
                     </td>
 
@@ -147,6 +148,7 @@ under the selected user -->
       {% endif %}
           <td>{{row['pos']}}</td>
           <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
             <a data-toggle="collapse" href="#" data-target="#{{row['player']}}">
                             {{row['player']}}
             </a>

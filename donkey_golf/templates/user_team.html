@@ -24,12 +24,11 @@
     </div>
 
  <div class="page-header" style="text-align:center; padding-top:10px;">
-   <h4>User Team</h4>
 
-   <h5>
+   <h4>
      {% for i, row in user_df.iterrows() %}
        {{row['username']}}
-     {% endfor %} </h5>
+     {% endfor %} </h4>
  </div>
 
 </div>
@@ -52,7 +51,10 @@
 
         <tr>
           <td>{{ row['pos'] }}</td>
-          <td>{{ row['player'] }}</td>
+          <td>
+            <img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+            {{ row['player'] }}
+          </td>
           <td>{{ row['to_par'] }}</td>
           <td>{{ row['thru'] }}</td>
           <td>{{ row['today'] }}</td>

@@ -65,7 +65,9 @@
         <td colspan="5">{{ row['pos'] }}</td>
       {% else %}
         <td>{{ row['pos'] }}</td>
-        <td>{{ row['player'] }}</td>
+        <td><img src="{{row['player_country']}}" alt="IDK" style="width:20px;height:20px;padding-right:5px;">
+          {{ row['player'] }}
+        </td>
         <td>{{ row['to_par'] }}</td>
         <td>{{ row['thru'] }}</td>
         <td>{{ row['today'] }}</td>

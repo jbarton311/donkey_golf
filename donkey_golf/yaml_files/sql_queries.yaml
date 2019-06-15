@@ -6,11 +6,12 @@ pull_available_players:
     ORDER BY b.current_rank
 
 users_team:
-    SELECT a.id, b.* from public.teams a
+    SELECT a.id, b.*, c.player_country from public.teams a
     INNER JOIN leaderboard b
         ON a.player = b.player
-    WHERE a.id = {0}
-    AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
+    LEFT JOIN player_info c on a.player = c.player_name
+    WHERE a.id = 28
+    AND a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');
 
 users_team_pre_tourney:
     SELECT * from public.teams
@@ -25,8 +26,11 @@ pull_tourney_status:
     select value from donkey_variables where metric = 'current_tourney_status';
 
 pull_tourney_leaderboard:
-    select * from leaderboard
+    select * from leaderboard a
+    left join player_info b
+    on a.player=b.player_name
     where tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
+    order by donkey_score
 
 aggregate_team_score:
     SELECT a.id, c.username, PAY.pay_flag,
@@ -64,10 +68,11 @@ tourney_info:
     SELECT * FROM public.tourney_info
 
 scoreboard_users_team:
-    select a.id, b.username, c.* from teams a
+    select a.id, b.username, c.*, d.player_country from teams a
     left join public.user b on a.id=b.id
     left join leaderboard c on a.player=c.player
-    WHERE a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id');
+    left join player_info d on a.player=d.player_name
+    WHERE a.tourney_id = (select value from donkey_variables where metric = 'current_tourney_id')
 
 user_info:
     select id, username, email, image_file from "user"
