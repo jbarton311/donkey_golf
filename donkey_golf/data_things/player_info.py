@@ -67,7 +67,7 @@ class LoadPlayerInfo(BaseClass):
                 new_dict['player_country'] = player.find_all('img')[0]['src']
 
                 # Grab the player name
-                new_dict['player_name'] = player.find_all('td')[2].text
+                new_dict['player_name'] = player.find_all('td')[1].text
 
                 # Add results to dictionary
                 self.output[player_id] = new_dict
