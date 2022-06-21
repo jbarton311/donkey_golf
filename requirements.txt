@@ -25,7 +25,7 @@ jupyter-client==5.2.4
 jupyter-core==4.4.0
 lxml==4.3.3
 MarkupSafe==1.1.1
-numpy==1.16.2
+numpy==1.22.0
 oyaml==0.9
 pandas==0.24.2
 parso==0.4.0
